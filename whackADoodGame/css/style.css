@@ -353,7 +353,7 @@ button:hover {
         text-align: center;
     }
 
-    #gameScreen {
+    #gameScreen:not(.hidden) {
         padding: 0;
         width: 100vw;
         height: 100vh;
@@ -364,7 +364,11 @@ button:hover {
         box-sizing: border-box;
     }
 
-    #gameHeader {
+    #gameScreen.hidden {
+        display: none !important;
+    }
+
+    #gameScreen:not(.hidden) #gameHeader {
         background: rgba(0, 0, 0, 0.9);
         z-index: 100;
         flex-direction: row;
@@ -381,7 +385,11 @@ button:hover {
         margin-top: 0;
     }
 
-    #gameCanvas {
+    #gameScreen.hidden #gameHeader {
+        display: none !important;
+    }
+
+    #gameScreen:not(.hidden) #gameCanvas {
         width: 100vw !important;
         flex: 1;
         height: auto !important;
@@ -392,6 +400,10 @@ button:hover {
         max-height: calc(100vh - 80px);
         order: 2;
         touch-action: none;
+    }
+
+    #gameScreen.hidden #gameCanvas {
+        display: none !important;
     }
 
     .stat {
