@@ -24,28 +24,12 @@
         }
 
         #header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 30px;
+            text-align: center;
             margin-bottom: 50px;
         }
 
-        #title {
-            color: #FFD700;
-            font-weight: bold;
-            font-size: 3em;
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
-            line-height: 1.3;
-            text-align: left;
-        }
-
-        #dood-mascot {
-            flex-shrink: 0;
-        }
-
         #dood-mascot img {
-            width: 317px;
+            width: 400px;
             height: auto;
             filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.4));
             animation: doodBounce 3s ease-in-out infinite;
@@ -242,18 +226,8 @@
 
         /* Mobile adjustments */
         @media (max-width: 768px) {
-            #header {
-                flex-direction: column;
-                gap: 20px;
-            }
-
-            #title {
-                font-size: 2em;
-                text-align: center;
-            }
-
             #dood-mascot img {
-                width: 173px;
+                width: 300px;
             }
 
             #games-container {
@@ -282,15 +256,10 @@
         @media (max-width: 480px) {
             #header {
                 margin-bottom: 30px;
-                gap: 15px;
-            }
-
-            #title {
-                font-size: 1.5em;
             }
 
             #dood-mascot img {
-                width: 144px;
+                width: 240px;
             }
 
             .game-card {
@@ -307,12 +276,7 @@
 <body>
     <div id="header">
         <div id="dood-mascot">
-            <img src="assets/dood.png" alt="Dood">
-        </div>
-        <div id="title">
-            Dood's<br>
-            Kickassamezin'<br>
-            World
+            <img src="assets/dood.png" alt="Dood's Kickassamazin World">
         </div>
     </div>
 

@@ -59,8 +59,8 @@ let score = 0;
 let timeLeft = 30;
 let gameTimer;
 let totalDoods = 0;
-let maxActiveDoods = 1; // Only 1 Dood at a time to start slower
-let spawnTimer = 60; // Frames until next Dood spawns (increased from 30)
+let maxActiveDoods = 2; // Start with 2 Doods at a time
+let spawnTimer = 20; // Frames until next Dood spawns - 20% faster
 let gameStartTime = 0; // Track elapsed time for difficulty scaling
 
 // Hole positions (15 holes in 5x3 grid - matching original game!)
@@ -252,7 +252,7 @@ function startGame() {
     timeLeft = 30;
     totalDoods = 0;
     gameState = 'playing';
-    spawnTimer = 60; // Start first Dood after a delay (increased)
+    spawnTimer = 20; // Start first Dood after a delay - 20% faster
     gameStartTime = Date.now(); // Track start time for difficulty
 
     document.getElementById('score').textContent = '0/0';
@@ -291,13 +291,19 @@ function updateDoods() {
     // Calculate difficulty scaling based on elapsed time
     const elapsedSeconds = (Date.now() - gameStartTime) / 1000;
 
-    // Gradually decrease spawn delay (starts at 60-120 frames, goes down to 30-60 frames after 20 seconds)
+    // Gradually decrease spawn delay - 20% faster (starts at 20-36 frames, goes down to 10-20 frames after 20 seconds)
     const difficultyFactor = Math.min(elapsedSeconds / 20, 1); // 0 to 1 over 20 seconds
-    const baseDelay = 60 - (30 * difficultyFactor); // 60 down to 30
-    const randomDelay = 60 - (30 * difficultyFactor); // 60 down to 30
+    const baseDelay = 20 - (10 * difficultyFactor); // 20 down to 10
+    const randomDelay = 16 - (6 * difficultyFactor); // 16 down to 10
 
-    // Gradually increase max active Doods (1 at start, up to 2 after 15 seconds)
-    maxActiveDoods = elapsedSeconds > 15 ? 2 : 1;
+    // Gradually increase max active Doods (2 at start, 3 after 10 seconds, 4 after 22 seconds)
+    if (elapsedSeconds > 22) {
+        maxActiveDoods = 4;
+    } else if (elapsedSeconds > 10) {
+        maxActiveDoods = 3;
+    } else {
+        maxActiveDoods = 2;
+    }
 
     // Count currently active Doods
     const activeCount = holes.filter(h => h.state !== 'hidden').length;
@@ -332,15 +338,15 @@ function updateDoods() {
 
         // Update Dood animation
         if (hole.state === 'rising') {
-            hole.doodY += 3; // Slower rise (was 4)
+            hole.doodY += 5; // Rise speed - 20% faster
             if (hole.doodY >= doodHeight) {
                 hole.doodY = doodHeight;
                 hole.state = 'up';
-                // Gradually reduce how long Dood stays up (starts at 60-110 frames, goes to 40-70 frames)
+                // Gradually reduce how long Dood stays up - 20% faster (starts at 32-48 frames, goes to 16-28 frames)
                 const elapsedSeconds = (Date.now() - gameStartTime) / 1000;
                 const difficultyFactor = Math.min(elapsedSeconds / 20, 1);
-                const baseStayTime = 60 - (20 * difficultyFactor); // 60 down to 40
-                const randomStayTime = 50 - (20 * difficultyFactor); // 50 down to 30
+                const baseStayTime = 32 - (16 * difficultyFactor); // 32 down to 16
+                const randomStayTime = 16 - (4 * difficultyFactor); // 16 down to 12
                 hole.timer = baseStayTime + Math.random() * randomStayTime;
             }
         } else if (hole.state === 'up') {
@@ -349,13 +355,13 @@ function updateDoods() {
                 hole.state = 'falling';
             }
         } else if (hole.state === 'falling') {
-            hole.doodY -= 3; // Slower descent (was 4)
+            hole.doodY -= 5; // Descent speed - 20% faster
             if (hole.doodY <= 0) {
                 hole.doodY = 0;
                 hole.state = 'hidden';
             }
         } else if (hole.state === 'hit') {
-            hole.doodY -= 6; // Hit animation stays fast
+            hole.doodY -= 7; // Hit animation - 20% faster
             if (hole.doodY <= 0) {
                 hole.doodY = 0;
                 hole.state = 'hidden';

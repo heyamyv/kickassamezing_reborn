@@ -5,10 +5,16 @@ const ctx = canvas.getContext('2d');
 // Detect mobile
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
 
+// Adjust canvas size for mobile
+if (isMobile) {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight - 150;
+}
+
 // Game state
 let gameState = 'playing'; // playing, won, lost
 let score = 0;
-let timeLeft = 60;
+let timeLeft = 20;
 let gameTimer;
 
 // Load original game images
@@ -49,9 +55,9 @@ Object.values(images).forEach(img => {
 // Player object
 const player = {
     x: canvas.width / 2,
-    y: canvas.height - 130,
-    width: 110,
-    height: 110,
+    y: canvas.height - 150,
+    width: 132,
+    height: 132,
     speed: 7,
     rotation: 0,
     vx: 0,
@@ -64,7 +70,10 @@ const keys = {};
 
 // Clouds array
 const clouds = [];
-const cloudCount = 10;
+const totalCloudCount = 15; // Total clouds to spawn throughout the game
+const initialCloudCount = 6; // Start with 6 clouds
+let cloudsSpawned = 0; // Track how many clouds have been spawned
+let nextSpawnScore = 2; // Spawn new cloud every 2 clouds eaten
 
 // Obstacles array
 const obstacles = [];
@@ -75,31 +84,47 @@ function init() {
     const loadingDiv = document.getElementById('loading');
     if (loadingDiv) loadingDiv.style.display = 'none';
 
-    // Show mobile controls if on mobile
+    // Clear arrays from any previous game
+    clouds.length = 0;
+    obstacles.length = 0;
+
+    // Reset player position
+    player.x = canvas.width / 2;
+    player.y = canvas.height - 150;
+    player.vx = 0;
+    player.vy = 0;
+    player.rotation = 0;
+
+    // Reset game state
+    gameState = 'playing';
+    score = 0;
+    timeLeft = 20;
+    document.getElementById('timer').textContent = timeLeft;
+
+    // Setup mobile controls if on mobile
     if (isMobile) {
-        const mobileControls = document.getElementById('mobileControls');
-        if (mobileControls) {
-            mobileControls.classList.remove('hidden');
-            setupMobileControls();
-        }
+        setupMobileControls();
         // Update instructions for mobile
         const controlsText = document.getElementById('controlsText');
         if (controlsText) {
-            controlsText.textContent = 'Use on-screen controls to move Dood and eat all 10 clouds!';
+            controlsText.textContent = 'Tap on screen to move Dood and eat all 15 clouds!';
         }
     }
 
-    // Create clouds (scaled up bigger)
-    for (let i = 0; i < cloudCount; i++) {
+    // Create initial clouds (scaled up bigger) - distributed throughout vertical space - 20% larger
+    cloudsSpawned = 0;
+    nextSpawnScore = 2;
+    for (let i = 0; i < initialCloudCount; i++) {
         clouds.push({
-            x: Math.random() * (canvas.width - 150) + 75,
-            y: Math.random() * (canvas.height - 200) + 70,
-            width: 140,
-            height: 70,
+            x: Math.random() * (canvas.width - 180) + 90,
+            y: Math.random() * (canvas.height - 300) + 70,
+            width: 168,
+            height: 84,
             eaten: false,
             floatOffset: Math.random() * Math.PI * 2,
             floatSpeed: 0.02 + Math.random() * 0.02
         });
+        cloudsSpawned++;
     }
 
     // Create obstacles
@@ -118,51 +143,58 @@ function init() {
 }
 
 function createObstacles() {
-    // Airplane (even bigger)
+    // Airplane - 100% larger (double size) - moves in straight line left to right
     obstacles.push({
         type: 'airplane',
-        x: canvas.width,
-        y: 80,
-        width: 220,
-        height: 70,
+        x: -250,
+        y: canvas.height * 0.12,
+        width: 440,
+        height: 140,
         speed: 2.8,
-        direction: -1
+        direction: 1
     });
 
-    // Birds (even bigger)
+    // Birds - 50% larger - spread vertically with wavy flight
     for (let i = 0; i < 3; i++) {
         obstacles.push({
             type: 'bird',
             x: Math.random() * canvas.width,
-            y: 120 + i * 95,
-            width: 45,
-            height: 36,
+            y: canvas.height * 0.25 + i * (canvas.height * 0.2),
+            baseY: canvas.height * 0.25 + i * (canvas.height * 0.2),
+            width: 68,
+            height: 54,
             speed: 2.1 + Math.random(),
             direction: Math.random() > 0.5 ? 1 : -1,
-            flap: 0
+            flap: 0,
+            waveOffset: Math.random() * Math.PI * 2,
+            waveAmplitude: 20 + Math.random() * 15,
+            waveFrequency: 0.03 + Math.random() * 0.02
         });
     }
 
-    // UFO (even bigger)
+    // UFO - 100% larger (double size) with 10% wider - moves in straight line left to right - positioned lower
     obstacles.push({
         type: 'ufo',
-        x: 150,
-        y: 50,
-        width: 180,
-        height: 110,
+        x: -220,
+        y: canvas.height * 0.4,
+        width: 396,
+        height: 220,
         speed: 2.1,
         direction: 1
     });
 
-    // Parachute (even bigger)
+    // Parachute - 200% larger (3x size) with gentle sway
     obstacles.push({
         type: 'parachute',
         x: Math.random() * canvas.width,
         y: 0,
-        width: 70,
-        height: 110,
+        width: 280,
+        height: 440,
         speed: 1.1,
-        direction: 1
+        direction: 1,
+        swayOffset: 0,
+        swayAmplitude: 25,
+        swayFrequency: 0.02
     });
 }
 
@@ -188,36 +220,31 @@ document.addEventListener('keyup', (e) => {
     keys[e.key] = false;
 });
 
+// Target position for tap controls
+let tapTarget = null;
+
 // Mobile controls setup
 function setupMobileControls() {
-    const buttons = document.querySelectorAll('.dpad-btn');
+    // On mobile, use tap-to-move instead of D-pad
+    canvas.addEventListener('touchstart', handleTap);
+    canvas.addEventListener('touchmove', handleTap);
+}
 
-    buttons.forEach(btn => {
-        const key = btn.dataset.key;
+function handleTap(e) {
+    if (gameState !== 'playing') return;
 
-        // Touch start - activate key
-        btn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            keys[key] = true;
-        });
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
 
-        // Touch end - deactivate key
-        btn.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            keys[key] = false;
-        });
+    // Convert screen coordinates to canvas coordinates
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
 
-        // Also handle mouse for testing
-        btn.addEventListener('mousedown', (e) => {
-            e.preventDefault();
-            keys[key] = true;
-        });
-
-        btn.addEventListener('mouseup', (e) => {
-            e.preventDefault();
-            keys[key] = false;
-        });
-    });
+    tapTarget = {
+        x: (touch.clientX - rect.left) * scaleX,
+        y: (touch.clientY - rect.top) * scaleY
+    };
 }
 
 // Update player
@@ -225,24 +252,51 @@ function updatePlayer() {
     player.vx = 0;
     player.vy = 0;
 
-    if (keys['ArrowLeft'] || keys['a']) {
-        player.vx = -player.speed;
-        player.rotation = -15;
-    }
-    if (keys['ArrowRight'] || keys['d']) {
-        player.vx = player.speed;
-        player.rotation = 15;
-    }
-    if (keys['ArrowUp'] || keys['w']) {
-        player.vy = -player.speed;
-    }
-    if (keys['ArrowDown'] || keys['s']) {
-        player.vy = player.speed;
-    }
+    if (isMobile && tapTarget) {
+        // Mobile: move toward tap location
+        const dx = tapTarget.x - player.x;
+        const dy = tapTarget.y - player.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
 
-    // Reset rotation if not moving horizontally
-    if (!keys['ArrowLeft'] && !keys['a'] && !keys['ArrowRight'] && !keys['d']) {
-        player.rotation = 0;
+        if (distance > 10) {
+            // Normalize and apply speed
+            player.vx = (dx / distance) * player.speed;
+            player.vy = (dy / distance) * player.speed;
+
+            // Set rotation based on horizontal movement
+            if (dx < -5) {
+                player.rotation = -15;
+            } else if (dx > 5) {
+                player.rotation = 15;
+            } else {
+                player.rotation = 0;
+            }
+        } else {
+            // Reached target
+            tapTarget = null;
+            player.rotation = 0;
+        }
+    } else {
+        // Desktop: arrow key controls
+        if (keys['ArrowLeft'] || keys['a']) {
+            player.vx = -player.speed;
+            player.rotation = -15;
+        }
+        if (keys['ArrowRight'] || keys['d']) {
+            player.vx = player.speed;
+            player.rotation = 15;
+        }
+        if (keys['ArrowUp'] || keys['w']) {
+            player.vy = -player.speed;
+        }
+        if (keys['ArrowDown'] || keys['s']) {
+            player.vy = player.speed;
+        }
+
+        // Reset rotation if not moving horizontally
+        if (!keys['ArrowLeft'] && !keys['a'] && !keys['ArrowRight'] && !keys['d']) {
+            player.rotation = 0;
+        }
     }
 
     player.x += player.vx;
@@ -260,6 +314,22 @@ function updatePlayer() {
     }
 }
 
+// Spawn a new cloud
+function spawnNewCloud() {
+    if (cloudsSpawned >= totalCloudCount) return;
+
+    clouds.push({
+        x: Math.random() * (canvas.width - 180) + 90,
+        y: Math.random() * (canvas.height - 300) + 70,
+        width: 168,
+        height: 84,
+        eaten: false,
+        floatOffset: Math.random() * Math.PI * 2,
+        floatSpeed: 0.02 + Math.random() * 0.02
+    });
+    cloudsSpawned++;
+}
+
 // Update clouds
 function updateClouds() {
     clouds.forEach(cloud => {
@@ -275,26 +345,37 @@ function updateClouds() {
 function updateObstacles() {
     obstacles.forEach(obstacle => {
         if (obstacle.type === 'airplane' || obstacle.type === 'ufo') {
+            // Move horizontally in straight line
             obstacle.x += obstacle.speed * obstacle.direction;
 
-            if (obstacle.x > canvas.width + 100 || obstacle.x < -100) {
+            if (obstacle.x > canvas.width + 250 || obstacle.x < -250) {
                 obstacle.direction *= -1;
-                obstacle.y = 30 + Math.random() * 100;
+                obstacle.y = canvas.height * 0.1 + Math.random() * (canvas.height * 0.5);
             }
         } else if (obstacle.type === 'bird') {
+            // Move horizontally
             obstacle.x += obstacle.speed * obstacle.direction;
             obstacle.flap += 0.2;
+
+            // Add wavy flight pattern
+            obstacle.waveOffset += obstacle.waveFrequency;
+            obstacle.y = obstacle.baseY + Math.sin(obstacle.waveOffset) * obstacle.waveAmplitude;
 
             if (obstacle.x > canvas.width + 30 || obstacle.x < -30) {
                 obstacle.direction *= -1;
             }
         } else if (obstacle.type === 'parachute') {
+            // Move downward
             obstacle.y += obstacle.speed;
-            obstacle.x += Math.sin(obstacle.y * 0.02) * 2;
+
+            // Gentle swaying motion
+            obstacle.swayOffset += obstacle.swayFrequency;
+            obstacle.x += Math.sin(obstacle.swayOffset) * 2;
 
             if (obstacle.y > canvas.height) {
                 obstacle.y = -60;
                 obstacle.x = Math.random() * canvas.width;
+                obstacle.swayOffset = 0;
             }
         }
     });
@@ -314,30 +395,72 @@ function checkCollisions() {
             eatSound.currentTime = 0;
             eatSound.play().catch(e => console.log('Sound play failed'));
 
-            if (score >= cloudCount) {
-                endGame(true, 'Dood got to eat all 10 clouds!');
+            // Spawn a new cloud every 2 clouds eaten (until we reach the total)
+            if (score >= nextSpawnScore && cloudsSpawned < totalCloudCount) {
+                spawnNewCloud();
+                nextSpawnScore += 2;
+            }
+
+            if (score >= totalCloudCount) {
+                endGame(true, 'Dood got to eat all 15 clouds!');
             }
         }
     });
 
     // Check obstacle collisions
     obstacles.forEach(obstacle => {
-        if (isColliding(player, obstacle)) {
+        // Skip collision check if obstacle is not substantially on-screen (at least 50% visible)
+        const obstacleRight = obstacle.x + obstacle.width / 2;
+        const obstacleLeft = obstacle.x - obstacle.width / 2;
+
+        // Calculate how much of the obstacle is visible
+        const visibleLeft = Math.max(0, obstacleLeft);
+        const visibleRight = Math.min(canvas.width, obstacleRight);
+        const visibleWidth = Math.max(0, visibleRight - visibleLeft);
+        const percentVisible = visibleWidth / obstacle.width;
+
+        // Only check collision if at least 50% of obstacle is visible
+        const isSubstantiallyVisible = percentVisible >= 0.5;
+
+        if (isSubstantiallyVisible && isColliding(player, obstacle)) {
+            console.log('COLLISION DETECTED:', {
+                type: obstacle.type,
+                obstacleX: obstacle.x,
+                obstacleY: obstacle.y,
+                obstacleWidth: obstacle.width,
+                obstacleHeight: obstacle.height,
+                playerX: player.x,
+                playerY: player.y,
+                percentVisible: percentVisible
+            });
             endGame(false, 'CRAP!! Dood hit a ' + obstacle.type + '!');
         }
     });
 }
 
 function isColliding(obj1, obj2) {
-    const obj1Left = obj1.x - obj1.width / 2;
-    const obj1Right = obj1.x + obj1.width / 2;
-    const obj1Top = obj1.y - obj1.height / 2;
-    const obj1Bottom = obj1.y + obj1.height / 2;
+    // Reduce collision area more aggressively for large obstacles
+    let obstaclePadding = 0;
+    if (obj2.type === 'airplane' || obj2.type === 'ufo') {
+        obstaclePadding = 0.35; // 70% reduction (35% on each side)
+    } else if (obj2.type === 'parachute') {
+        obstaclePadding = 0.3; // 60% reduction (30% on each side)
+    } else if (obj2.type === 'bird') {
+        obstaclePadding = 0.25; // 50% reduction (25% on each side)
+    }
 
-    const obj2Left = obj2.x - obj2.width / 2;
-    const obj2Right = obj2.x + obj2.width / 2;
-    const obj2Top = (obj2.renderY || obj2.y) - obj2.height / 2;
-    const obj2Bottom = (obj2.renderY || obj2.y) + obj2.height / 2;
+    // Also reduce player hitbox by 20% (10% on each side) since sprite has transparent areas
+    const playerPadding = 0.1;
+
+    const obj1Left = obj1.x - obj1.width / 2 + (obj1.width * playerPadding);
+    const obj1Right = obj1.x + obj1.width / 2 - (obj1.width * playerPadding);
+    const obj1Top = obj1.y - obj1.height / 2 + (obj1.height * playerPadding);
+    const obj1Bottom = obj1.y + obj1.height / 2 - (obj1.height * playerPadding);
+
+    const obj2Left = obj2.x - obj2.width / 2 + (obj2.width * obstaclePadding);
+    const obj2Right = obj2.x + obj2.width / 2 - (obj2.width * obstaclePadding);
+    const obj2Top = (obj2.renderY || obj2.y) - obj2.height / 2 + (obj2.height * obstaclePadding);
+    const obj2Bottom = (obj2.renderY || obj2.y) + obj2.height / 2 - (obj2.height * obstaclePadding);
 
     return obj1Left < obj2Right &&
            obj1Right > obj2Left &&
@@ -380,13 +503,15 @@ function drawObstacles() {
         ctx.save();
 
         if (obstacle.type === 'airplane') {
-            // Flip image if going right
+            // Flip image based on direction (default image faces right, travels left to right)
             if (obstacle.direction > 0) {
+                // Moving right - use default orientation
+                ctx.drawImage(images.airplane, obstacle.x - obstacle.width / 2, obstacle.y - obstacle.height / 2, obstacle.width, obstacle.height);
+            } else {
+                // Moving left - flip the image
                 ctx.translate(obstacle.x + obstacle.width / 2, obstacle.y);
                 ctx.scale(-1, 1);
                 ctx.drawImage(images.airplane, -obstacle.width / 2, -obstacle.height / 2, obstacle.width, obstacle.height);
-            } else {
-                ctx.drawImage(images.airplane, obstacle.x - obstacle.width / 2, obstacle.y - obstacle.height / 2, obstacle.width, obstacle.height);
             }
         } else if (obstacle.type === 'bird') {
             // Bird - simple drawing
@@ -401,13 +526,15 @@ function drawObstacles() {
             ctx.lineTo(obstacle.x + 15, obstacle.y);
             ctx.stroke();
         } else if (obstacle.type === 'ufo') {
-            // Flip UFO image if going right
+            // Flip UFO image based on direction (default image faces right, travels left to right)
             if (obstacle.direction > 0) {
+                // Moving right - use default orientation
+                ctx.drawImage(images.ufo, obstacle.x - obstacle.width / 2, obstacle.y - obstacle.height / 2, obstacle.width, obstacle.height);
+            } else {
+                // Moving left - flip the image
                 ctx.translate(obstacle.x + obstacle.width / 2, obstacle.y);
                 ctx.scale(-1, 1);
                 ctx.drawImage(images.ufo, -obstacle.width / 2, -obstacle.height / 2, obstacle.width, obstacle.height);
-            } else {
-                ctx.drawImage(images.ufo, obstacle.x - obstacle.width / 2, obstacle.y - obstacle.height / 2, obstacle.width, obstacle.height);
             }
         } else if (obstacle.type === 'parachute') {
             // Parachute - simple drawing
@@ -425,8 +552,8 @@ function drawObstacles() {
 }
 
 function drawSky() {
-    // Draw sun using original image (even bigger)
-    ctx.drawImage(images.sun, 720, 30, 110, 110);
+    // Draw sun using original image - 20% larger - positioned for vertical canvas
+    ctx.drawImage(images.sun, canvas.width - 150, 30, 132, 132);
 }
 
 // Game loop
