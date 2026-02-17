@@ -261,7 +261,7 @@ button:hover {
         align-items: center;
     }
 
-    #mainMenu, #instructionsScreen {
+    #mainMenu {
         width: 100vw;
         height: 100vh;
         display: flex;
@@ -273,8 +273,23 @@ button:hover {
         background: rgba(0, 0, 0, 0.7);
     }
 
-    #mainMenu.hidden, #instructionsScreen.hidden {
+    #instructionsScreen {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 30px 20px;
+        box-sizing: border-box;
+        background: rgba(0, 0, 0, 0.7);
+    }
+
+    #mainMenu.hidden,
+    #instructionsScreen.hidden,
+    .screen.hidden {
         display: none !important;
+        visibility: hidden !important;
     }
 
     #mainMenu img {
