@@ -61,13 +61,14 @@ const holeRadius = 50;
 const doodHeight = 60; // How far the Dood pops up from the hole
 
 // Create 15 holes in a more organic layout (5 rows x 3 cols for vertical canvas)
+// Canvas is 600x800, leave margins
 for (let row = 0; row < 5; row++) {
     for (let col = 0; col < 3; col++) {
-        // Base grid position with random offsets for more natural look
-        const baseX = 120 + col * 170;
-        const baseY = 200 + row * 130;
-        const offsetX = (Math.random() - 0.5) * 60; // Random offset -30 to +30
-        const offsetY = (Math.random() - 0.5) * 40; // Random offset -20 to +20
+        // Base grid position centered with better spacing
+        const baseX = 150 + col * 150; // Start at 150, space by 150 (col 0: 150, col 1: 300, col 2: 450)
+        const baseY = 220 + row * 120; // Start at 220, space by 120
+        const offsetX = (Math.random() - 0.5) * 40; // Reduced offset -20 to +20
+        const offsetY = (Math.random() - 0.5) * 30; // Reduced offset -15 to +15
 
         holes.push({
             x: baseX + offsetX,
