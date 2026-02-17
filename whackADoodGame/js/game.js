@@ -109,9 +109,6 @@ const bgMusic = document.getElementById('bgMusic');
 // Button handlers - Main Menu
 document.getElementById('playBtn').addEventListener('click', startGame);
 document.getElementById('instructionsBtn').addEventListener('click', showInstructions);
-document.getElementById('mainMenuBtnStart').addEventListener('click', () => {
-    window.location.href = '../../mainscreen.html';
-});
 
 // Instructions screen
 document.getElementById('backToMenuBtn').addEventListener('click', () => {

@@ -472,10 +472,6 @@ document.getElementById('restartBtn').addEventListener('click', () => {
     location.reload();
 });
 
-document.getElementById('mainMenuBtn').addEventListener('click', () => {
-    window.location.href = '../../mainscreen.html';
-});
-
 // Start game when images are loaded
 function checkImagesLoaded() {
     console.log('Checking images:', imagesLoaded, '/', totalImages);
