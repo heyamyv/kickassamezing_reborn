@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Kickass Amazing Games</title>
+    <title>Dood's Kickassamazin World</title>
     <style>
         * {
             margin: 0;
@@ -13,188 +13,335 @@
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             font-family: 'Arial', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
-            color: white;
+            background: #6B8E23;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
 
-        .container {
-            text-align: center;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 50px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            max-width: 800px;
+        #header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 50px;
         }
 
-        h1 {
+        #title {
+            color: #FFD700;
+            font-weight: bold;
             font-size: 3em;
-            margin-bottom: 20px;
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
-            background: linear-gradient(45deg, #4facfe, #00f2fe);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+            line-height: 1.3;
+            text-align: left;
         }
 
-        .subtitle {
-            font-size: 1.2em;
-            margin-bottom: 40px;
-            color: #ddd;
+        #dood-mascot {
+            flex-shrink: 0;
         }
 
-        .games-grid {
+        #dood-mascot img {
+            width: 317px;
+            height: auto;
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.4));
+            animation: doodBounce 3s ease-in-out infinite;
+        }
+
+        @keyframes doodBounce {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        #games-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            max-width: 1000px;
+            width: 100%;
         }
 
         .game-card {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 15px;
-            padding: 30px;
-            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
             cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
         }
 
         .game-card:hover {
             transform: translateY(-10px);
-            background: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+            border-color: #FFD700;
+            background: rgba(255, 255, 255, 0.25);
         }
 
-        .game-card h2 {
-            font-size: 1.8em;
-            margin-bottom: 15px;
-            color: #4facfe;
-        }
-
-        .game-card p {
-            color: #ccc;
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-
-        .game-card .status {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .status.ready {
-            background: #00d084;
-            color: white;
-        }
-
-        .status.coming-soon {
-            background: #ffa500;
-            color: white;
-        }
-
-        .btn {
-            background: linear-gradient(45deg, #4facfe, #00f2fe);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-size: 1em;
-            cursor: pointer;
+        .game-icon {
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 10px;
+        }
+
+        .game-card:hover .game-icon {
+            transform: scale(1.1);
+        }
+
+        /* Window with clouds */
+        .window-icon {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 100%);
+            border: 12px solid #8B4513;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .window-icon::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            background: #654321;
+            left: 50%;
+            top: 0;
+        }
+
+        .window-icon::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: #654321;
+            top: 50%;
+            left: 0;
+        }
+
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 100px;
+            opacity: 0.9;
+        }
+
+        .cloud::before,
+        .cloud::after {
+            content: '';
+            position: absolute;
+            background: white;
+            border-radius: 100px;
+        }
+
+        .cloud1 {
+            width: 50px;
+            height: 20px;
+            top: 30px;
+            left: 30px;
+            animation: float1 3s ease-in-out infinite;
+        }
+
+        .cloud1::before {
+            width: 25px;
+            height: 25px;
+            top: -12px;
+            left: 8px;
+        }
+
+        .cloud1::after {
+            width: 30px;
+            height: 20px;
+            top: -8px;
+            right: 8px;
+        }
+
+        .cloud2 {
+            width: 60px;
+            height: 25px;
+            bottom: 40px;
+            right: 40px;
+            animation: float2 4s ease-in-out infinite;
+        }
+
+        .cloud2::before {
+            width: 30px;
+            height: 30px;
+            top: -15px;
+            left: 12px;
+        }
+
+        .cloud2::after {
+            width: 35px;
+            height: 25px;
+            top: -10px;
+            right: 12px;
+        }
+
+        @keyframes float1 {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes float2 {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(8px); }
+        }
+
+        /* Hammer */
+        .hammer-icon {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hammer-icon img {
+            width: 80%;
+            height: 80%;
+            object-fit: contain;
+            filter: drop-shadow(3px 3px 8px rgba(0, 0, 0, 0.4));
+            animation: hammerSwing 2s ease-in-out infinite;
+        }
+
+        @keyframes hammerSwing {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        .game-name {
+            font-size: 2em;
             font-weight: bold;
+            color: #FFFFFF;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+            text-align: center;
         }
 
-        .btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px rgba(79, 172, 254, 0.5);
+        .game-description {
+            font-size: 1em;
+            color: #FFFFFF;
+            text-align: center;
+            line-height: 1.6;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
         }
 
-        .footer {
-            margin-top: 40px;
-            color: #999;
-            font-size: 0.9em;
-        }
-
-        /* Mobile responsive */
+        /* Mobile adjustments */
         @media (max-width: 768px) {
-            .container {
-                padding: 20px;
+            #header {
+                flex-direction: column;
+                gap: 20px;
             }
 
-            h1 {
+            #title {
                 font-size: 2em;
+                text-align: center;
             }
 
-            .subtitle {
-                font-size: 1em;
+            #dood-mascot img {
+                width: 173px;
             }
 
-            .games-grid {
+            #games-container {
                 grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .game-card {
+                padding: 30px;
+            }
+
+            .game-icon {
+                width: 150px;
+                height: 150px;
+            }
+
+            .game-name {
+                font-size: 1.5em;
+            }
+
+            .game-description {
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #header {
+                margin-bottom: 30px;
+                gap: 15px;
+            }
+
+            #title {
+                font-size: 1.5em;
+            }
+
+            #dood-mascot img {
+                width: 144px;
             }
 
             .game-card {
                 padding: 20px;
             }
 
-            .game-card h2 {
-                font-size: 1.5em;
-            }
-
-            .btn {
-                font-size: 0.9em;
-                padding: 10px 25px;
-            }
-
-            .footer {
-                font-size: 0.8em;
+            .game-icon {
+                width: 120px;
+                height: 120px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎮 Kickass Amazing Games</h1>
-        <p class="subtitle">Classic Flash Games Reborn in HTML5</p>
+    <div id="header">
+        <div id="dood-mascot">
+            <img src="assets/dood.png" alt="Dood">
+        </div>
+        <div id="title">
+            Dood's<br>
+            Kickassamezin'<br>
+            World
+        </div>
+    </div>
 
-        <div class="games-grid">
-            <div class="game-card" onclick="location.href='eatTheClouds/index.html'">
-                <h2>☁️ Eat The Clouds</h2>
-                <p>Guide Dood through the sky to eat all 10 clouds while dodging airplanes, birds, and UFOs!</p>
-                <span class="status ready">✓ Ready to Play</span>
-                <br>
-                <a href="eatTheClouds/index.html" class="btn">Play Now</a>
+    <div id="games-container">
+        <!-- Eat The Clouds -->
+        <div class="game-card" onclick="location.href='eatTheClouds/index.html'">
+            <div class="game-icon">
+                <div class="window-icon">
+                    <div class="cloud cloud1"></div>
+                    <div class="cloud cloud2"></div>
+                </div>
             </div>
-
-            <div class="game-card" onclick="location.href='whackADoodGame/index.html'">
-                <h2>🔨 Whack A Dood</h2>
-                <p>Classic whack-a-mole style game. How many Doods can you whack?</p>
-                <span class="status ready">✓ Ready to Play</span>
-                <br>
-                <a href="whackADoodGame/index.html" class="btn">Play Now</a>
-            </div>
-
-            <div class="game-card">
-                <h2>🎯 Mystery Game</h2>
-                <p>Another awesome game waiting to be converted!</p>
-                <span class="status coming-soon">Coming Soon</span>
+            <div class="game-name">Eat The Clouds</div>
+            <div class="game-description">
+                Guide Dood through the sky to eat all 10 clouds while dodging airplanes, birds, and UFOs!
             </div>
         </div>
 
-        <div class="footer">
-            <p>Original Flash games from 2009 | Converted to HTML5 in 2024</p>
-            <p>Use arrow keys to control • Works on all modern browsers</p>
+        <!-- Whack A Dood -->
+        <div class="game-card" onclick="location.href='whackADoodGame/index.html'">
+            <div class="game-icon">
+                <div class="hammer-icon">
+                    <img src="whackADoodGame/assets/images/hammer.png" alt="Hammer">
+                </div>
+            </div>
+            <div class="game-name">Whack A Dood</div>
+            <div class="game-description">
+                Classic whack-a-mole style game. How many Doods can you whack before time runs out?
+            </div>
         </div>
     </div>
 </body>

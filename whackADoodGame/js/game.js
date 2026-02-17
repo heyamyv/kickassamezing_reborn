@@ -73,7 +73,7 @@ const doodHeight = 60; // How far the Dood pops up from the hole
 const cols = 3;
 const rows = 5;
 const marginX = canvas.width * 0.15; // 15% margin on sides
-const grassStartY = canvas.height * 0.38; // Grass starts at 38% from top (ensure no holes touch sky)
+const grassStartY = canvas.height * 0.36; // Holes start at 36% from top (buffer from hill at 30%)
 const grassEndY = canvas.height * 0.88; // End at 88% (leave margin at bottom for visibility)
 const availableWidth = canvas.width - (marginX * 2);
 const availableHeight = grassEndY - grassStartY;
@@ -119,6 +119,7 @@ document.getElementById('backToMenuBtn').addEventListener('click', () => {
 // Game over buttons
 document.getElementById('playAgainBtn').addEventListener('click', () => {
     gameOverDiv.classList.add('hidden');
+    gameScreen.classList.remove('hidden');
     startGame();
 });
 
@@ -126,7 +127,6 @@ document.getElementById('backToMenuBtn2').addEventListener('click', () => {
     gameOverDiv.classList.add('hidden');
     gameScreen.classList.add('hidden');
     mainMenu.classList.remove('hidden');
-    bgMusic.pause();
 });
 
 // Quit button during game
@@ -135,7 +135,6 @@ document.getElementById('quitBtn').addEventListener('click', () => {
     clearInterval(gameTimer);
     gameScreen.classList.add('hidden');
     mainMenu.classList.remove('hidden');
-    bgMusic.pause();
 });
 
 // Mouse tracking for hammer (desktop: always show, mobile: hide until hit)
@@ -273,11 +272,6 @@ function startGame() {
     instructionsScreen.classList.add('hidden');
     gameScreen.classList.remove('hidden');
 
-    // Start background music
-    bgMusic.volume = 0.3;
-    bgMusic.currentTime = 0;
-    bgMusic.play().catch(e => console.log('Audio autoplay prevented'));
-
     // Start timer
     clearInterval(gameTimer);
     gameTimer = setInterval(() => {
@@ -323,7 +317,6 @@ function updateDoods() {
             randomHole.timer = 0;
             totalDoods++;
             document.getElementById('score').textContent = score + '/' + totalDoods;
-            playSound(popupSound);
 
             // Reset spawn timer - with gradually decreasing delay for difficulty
             spawnTimer = baseDelay + Math.random() * randomDelay;
@@ -380,8 +373,8 @@ function drawBackground() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Draw curved grass hill (dynamic based on canvas size)
-    // Hill should be at ~35% to leave room for holes starting at 38%
-    const hillTop = canvas.height * 0.35;
+    // Hill should be at ~30% to leave room for holes starting at 33%
+    const hillTop = canvas.height * 0.30;
     ctx.fillStyle = '#228B22';
     ctx.beginPath();
     ctx.moveTo(0, hillTop);
@@ -486,7 +479,9 @@ function gameLoop() {
 function endGame() {
     gameState = 'gameover';
     clearInterval(gameTimer);
-    bgMusic.pause();
+
+    // Hide game screen
+    gameScreen.classList.add('hidden');
 
     const gameOverTitle = document.getElementById('gameOverTitle');
     const gameOverText = document.getElementById('gameOverText');
@@ -494,32 +489,40 @@ function endGame() {
     // Determine which screen to show based on score
     const percentage = totalDoods > 0 ? (score / totalDoods) * 100 : 0;
 
-    let winImage;
+    let title, message, emoji;
     if (percentage === 100) {
-        winImage = images.winKickass;
+        title = 'KICKASS!';
+        message = 'You are a kickassamazin person all around';
+        emoji = '🔥';
     } else if (percentage >= 60) {
-        winImage = images.winPrettyGood;
+        title = 'Pretty GOOD!';
+        message = 'need improvement on your kickassamezingness';
+        emoji = '👍';
     } else if (percentage >= 30) {
-        winImage = images.winMediocre;
+        title = 'MEDIOCRE';
+        message = 'stop being a mediocre loser';
+        emoji = '😐';
     } else {
-        winImage = images.winLoser;
+        title = 'LOSER!';
+        message = 'obviously you suck at life';
+        emoji = '💩';
     }
 
-    // Clear previous content and show original screen
+    // Clear previous content
     gameOverTitle.innerHTML = '';
     gameOverText.innerHTML = '';
 
-    // Create image element
-    const img = document.createElement('img');
-    img.src = winImage.src;
-    img.style.maxWidth = '800px';
-    img.style.width = '100%';
-    img.style.borderRadius = '15px';
-    img.style.marginBottom = '20px';
+    // Set title with emoji
+    gameOverTitle.textContent = `${emoji} ${title} ${emoji}`;
+    gameOverTitle.style.fontSize = '3em';
+    gameOverTitle.style.marginBottom = '20px';
 
-    gameOverTitle.appendChild(img);
-    gameOverText.textContent = `You hit ${score} out of ${totalDoods} doods!`;
-    gameOverText.style.fontSize = '1.8em';
+    // Set message and score
+    gameOverText.innerHTML = `
+        <p style="font-size: 2em; margin: 20px 0;">${message}</p>
+        <p style="font-size: 1.8em; color: #ffd93d;">You hit ${score} out of ${totalDoods} doods!</p>
+        <p style="font-size: 1.5em; color: #aaa;">${Math.round(percentage)}% success rate</p>
+    `;
 
     gameOverDiv.classList.remove('hidden');
 }

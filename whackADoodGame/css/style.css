@@ -197,15 +197,16 @@ h1 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.95);
-    padding: 60px 100px;
+    background: linear-gradient(to bottom, #5a4570 0%, #3d2f4d 100%);
+    padding: 60px 80px;
     border-radius: 25px;
-    border: 5px solid #ff6b6b;
+    border: 5px solid #ffd93d;
     box-shadow: 0 15px 60px rgba(0, 0, 0, 0.9);
     z-index: 2000;
     text-align: center;
     animation: slideIn 0.5s;
-    min-width: 850px;
+    max-width: 600px;
+    width: 90%;
 }
 
 @keyframes slideIn {
@@ -226,13 +227,15 @@ h1 {
 #gameOverTitle {
     font-size: 3em;
     margin-bottom: 20px;
-    color: #ffd93d;
+    color: #ffffff;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
 }
 
 #gameOverText {
-    font-size: 2em;
+    font-size: 1.5em;
     margin-bottom: 40px;
-    color: #ff6b6b;
+    color: #ffffff;
+    line-height: 1.6;
 }
 
 button {
@@ -464,9 +467,17 @@ button:hover {
     }
 
     #gameOver {
-        min-width: auto;
         width: 90%;
+        max-width: 90%;
         padding: 40px 20px;
+    }
+
+    #gameOverTitle {
+        font-size: 2em !important;
+    }
+
+    #gameOverText p {
+        font-size: 0.9em !important;
     }
 
     .screen {
