@@ -35,8 +35,8 @@ const totalImages = Object.keys(images).length;
 images.dood1.src = 'assets/images/dood1.png';
 images.dood2.src = 'assets/images/dood2.png';
 images.cloud.src = 'assets/images/cloud_original.png';
-images.airplane.src = 'assets/images/airplane_original.png';
-images.ufo.src = 'assets/images/ufo_original.png';
+images.airplane.src = 'assets/images/airplane_new.png';
+images.ufo.src = 'assets/images/UFO_new.png';
 images.sun.src = 'assets/images/sun_original.png';
 
 // Track image loading
@@ -61,6 +61,7 @@ const player = {
     height: 92, // 30% smaller (132 * 0.7)
     speed: 7,
     rotation: 0,
+    targetRotation: 0, // Target rotation for smooth interpolation
     vx: 0,
     vy: 0,
     imageIndex: 0,  // 0 = normal face (dood1), 1 = eating face (dood2)
@@ -90,12 +91,19 @@ function init() {
     clouds.length = 0;
     obstacles.length = 0;
 
+    // Reset game over screen styling
+    const gameOverDiv = document.getElementById('gameOver');
+    if (gameOverDiv) {
+        gameOverDiv.classList.remove('lost');
+    }
+
     // Reset player position
     player.x = canvas.width / 2;
     player.y = canvas.height - 150;
     player.vx = 0;
     player.vy = 0;
     player.rotation = 0;
+    player.targetRotation = 0;
     player.imageIndex = 0;
     player.eatingTimer = 0;
 
@@ -109,11 +117,6 @@ function init() {
     // Setup mobile controls if on mobile
     if (isMobile) {
         setupMobileControls();
-        // Update instructions for mobile
-        const controlsText = document.getElementById('controlsText');
-        if (controlsText) {
-            controlsText.textContent = 'Tap on screen to move Dood and eat all 15 clouds!';
-        }
     }
 
     // Create initial clouds (scaled up bigger) - distributed throughout vertical space - 20% larger
@@ -228,7 +231,8 @@ function startGameTimer() {
             document.getElementById('timer').textContent = timeLeft;
 
             if (timeLeft <= 0) {
-                endGame(false, 'Time\'s up! Dood only ate ' + score + ' clouds!');
+                const cloudWord = score === 1 ? 'cloud' : 'clouds';
+                endGame(false, 'Time\'s up! Dood only ate ' + score + ' ' + cloudWord + '!');
             }
         }
     }, 1000);
@@ -286,28 +290,28 @@ function updatePlayer() {
             player.vx = (dx / distance) * player.speed;
             player.vy = (dy / distance) * player.speed;
 
-            // Set rotation based on horizontal movement
+            // Set target rotation based on horizontal movement
             if (dx < -5) {
-                player.rotation = -15;
+                player.targetRotation = -15;
             } else if (dx > 5) {
-                player.rotation = 15;
+                player.targetRotation = 15;
             } else {
-                player.rotation = 0;
+                player.targetRotation = 0;
             }
         } else {
             // Reached target
             tapTarget = null;
-            player.rotation = 0;
+            player.targetRotation = 0;
         }
     } else {
         // Desktop: arrow key controls
         if (keys['ArrowLeft'] || keys['a']) {
             player.vx = -player.speed;
-            player.rotation = -15;
+            player.targetRotation = -15;
         }
         if (keys['ArrowRight'] || keys['d']) {
             player.vx = player.speed;
-            player.rotation = 15;
+            player.targetRotation = 15;
         }
         if (keys['ArrowUp'] || keys['w']) {
             player.vy = -player.speed;
@@ -316,10 +320,22 @@ function updatePlayer() {
             player.vy = player.speed;
         }
 
-        // Reset rotation if not moving horizontally
+        // Reset target rotation if not moving horizontally
         if (!keys['ArrowLeft'] && !keys['a'] && !keys['ArrowRight'] && !keys['d']) {
-            player.rotation = 0;
+            player.targetRotation = 0;
         }
+    }
+
+    // Smoothly interpolate rotation towards target rotation
+    const rotationSpeed = 3; // Degrees per frame
+    if (Math.abs(player.targetRotation - player.rotation) > 0.5) {
+        if (player.rotation < player.targetRotation) {
+            player.rotation = Math.min(player.rotation + rotationSpeed, player.targetRotation);
+        } else {
+            player.rotation = Math.max(player.rotation - rotationSpeed, player.targetRotation);
+        }
+    } else {
+        player.rotation = player.targetRotation;
     }
 
     player.x += player.vx;
@@ -342,7 +358,7 @@ function updatePlayer() {
 function spawnNewCloud() {
     if (cloudsSpawned >= totalCloudCount) return;
 
-    const minDistance = 200; // Minimum distance from existing clouds
+    const minDistance = 500; // Minimum distance from existing clouds
     let attempts = 0;
     let newX, newY, tooClose;
 
@@ -468,7 +484,7 @@ function checkCollisions() {
             }
 
             if (score >= totalCloudCount) {
-                endGame(true, 'Dood got to eat all 15 clouds!');
+                endGame(true, 'Dreams do come true! Dood got to eat all the clouds.');
             }
         }
     });
@@ -514,10 +530,12 @@ function checkCollisions() {
 }
 
 function isColliding(obj1, obj2) {
-    // Reduce collision area very aggressively for large obstacles
+    // Reduce collision area for obstacles with balanced hitboxes
     let obstaclePadding = 0;
-    if (obj2.type === 'airplane' || obj2.type === 'ufo') {
-        obstaclePadding = 0.4; // 80% reduction (40% on each side)
+    if (obj2.type === 'airplane') {
+        obstaclePadding = 0.15; // 30% reduction (15% on each side) - tighter image
+    } else if (obj2.type === 'ufo') {
+        obstaclePadding = 0.15; // 30% reduction (15% on each side) - tighter image
     } else if (obj2.type === 'parachute') {
         obstaclePadding = 0.35; // 70% reduction (35% on each side)
     } else if (obj2.type === 'bird') {
@@ -664,6 +682,13 @@ function endGame(won, message) {
 
     gameOverText.textContent = message;
     gameOverDiv.classList.remove('hidden');
+
+    // Add red border for loss screens
+    if (!won) {
+        gameOverDiv.classList.add('lost');
+    } else {
+        gameOverDiv.classList.remove('lost');
+    }
 
     const bgMusic = document.getElementById('bgMusic');
     bgMusic.pause();
