@@ -359,8 +359,8 @@ function updateDoods() {
 function drawBackground() {
     // Draw blue sky gradient
     const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    skyGradient.addColorStop(0, '#87CEEB');
-    skyGradient.addColorStop(1, '#B0D8F0');
+    skyGradient.addColorStop(0, '#00BFFF');
+    skyGradient.addColorStop(1, '#87CEEB');
     ctx.fillStyle = skyGradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
