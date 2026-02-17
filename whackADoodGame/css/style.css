@@ -261,28 +261,32 @@ button:hover {
         align-items: center;
     }
 
-    #mainMenu:not(.hidden), #instructionsScreen:not(.hidden) {
-        width: 100vw !important;
-        height: 100vh !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: center !important;
-        align-items: center !important;
-        padding: 30px 20px !important;
+    #mainMenu, #instructionsScreen {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 30px 20px;
         box-sizing: border-box;
         background: rgba(0, 0, 0, 0.7);
     }
 
+    #mainMenu.hidden, #instructionsScreen.hidden {
+        display: none !important;
+    }
+
     #mainMenu img {
-        max-width: 80% !important;
-        width: auto !important;
-        height: auto !important;
-        margin-bottom: 30px !important;
+        max-width: 80%;
+        width: auto;
+        height: auto;
+        margin-bottom: 30px;
     }
 
     .subtitle {
-        font-size: 1.3em !important;
-        margin-bottom: 30px !important;
+        font-size: 1.3em;
+        margin-bottom: 30px;
         text-align: center;
     }
 
@@ -332,9 +336,9 @@ button:hover {
     }
 
     .big-btn {
-        font-size: 1.3em !important;
-        padding: 15px 40px !important;
-        margin: 10px 0 !important;
+        font-size: 1.3em;
+        padding: 15px 40px;
+        margin: 10px 0;
         width: 80%;
         max-width: 300px;
     }
