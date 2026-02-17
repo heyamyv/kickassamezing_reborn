@@ -252,7 +252,8 @@ function startGame() {
     timeLeft = 30;
     totalDoods = 0;
     gameState = 'playing';
-    spawnTimer = 20; // Start first Dood after a delay - 20% faster
+    maxActiveDoods = 2; // Start with 2 doods
+    spawnTimer = 20; // Start first Dood after a delay
     gameStartTime = Date.now(); // Track start time for difficulty
 
     document.getElementById('score').textContent = '0/0';
@@ -291,15 +292,13 @@ function updateDoods() {
     // Calculate difficulty scaling based on elapsed time
     const elapsedSeconds = (Date.now() - gameStartTime) / 1000;
 
-    // Gradually decrease spawn delay - 20% faster (starts at 20-36 frames, goes down to 10-20 frames after 20 seconds)
+    // Gradually decrease spawn delay with moderate scaling (starts at 20-36 frames, goes down to 14-24 frames after 20 seconds)
     const difficultyFactor = Math.min(elapsedSeconds / 20, 1); // 0 to 1 over 20 seconds
-    const baseDelay = 20 - (10 * difficultyFactor); // 20 down to 10
-    const randomDelay = 16 - (6 * difficultyFactor); // 16 down to 10
+    const baseDelay = 20 - (6 * difficultyFactor); // 20 down to 14 (less aggressive)
+    const randomDelay = 16 - (8 * difficultyFactor); // 16 down to 8
 
-    // Gradually increase max active Doods (2 at start, 3 after 10 seconds, 4 after 22 seconds)
-    if (elapsedSeconds > 22) {
-        maxActiveDoods = 4;
-    } else if (elapsedSeconds > 10) {
+    // Cap max active Doods at 3 (2 at start, 3 after 12 seconds)
+    if (elapsedSeconds > 12) {
         maxActiveDoods = 3;
     } else {
         maxActiveDoods = 2;
@@ -342,11 +341,11 @@ function updateDoods() {
             if (hole.doodY >= doodHeight) {
                 hole.doodY = doodHeight;
                 hole.state = 'up';
-                // Gradually reduce how long Dood stays up - 20% faster (starts at 32-48 frames, goes to 16-28 frames)
+                // Gradually reduce how long Dood stays up with moderate scaling (starts at 35-50 frames, goes to 24-36 frames)
                 const elapsedSeconds = (Date.now() - gameStartTime) / 1000;
                 const difficultyFactor = Math.min(elapsedSeconds / 20, 1);
-                const baseStayTime = 32 - (16 * difficultyFactor); // 32 down to 16
-                const randomStayTime = 16 - (4 * difficultyFactor); // 16 down to 12
+                const baseStayTime = 35 - (11 * difficultyFactor); // 35 down to 24 (more time to react)
+                const randomStayTime = 15 - (3 * difficultyFactor); // 15 down to 12
                 hole.timer = baseStayTime + Math.random() * randomStayTime;
             }
         } else if (hole.state === 'up') {

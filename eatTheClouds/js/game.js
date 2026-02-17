@@ -56,13 +56,14 @@ Object.values(images).forEach(img => {
 const player = {
     x: canvas.width / 2,
     y: canvas.height - 150,
-    width: 132,
-    height: 132,
+    width: 92,  // 30% smaller (132 * 0.7)
+    height: 92, // 30% smaller (132 * 0.7)
     speed: 7,
     rotation: 0,
     vx: 0,
     vy: 0,
-    imageIndex: 0
+    imageIndex: 0,  // 0 = normal face (dood1), 1 = eating face (dood2)
+    eatingTimer: 0  // Timer for eating animation
 };
 
 // Keyboard state
@@ -94,6 +95,8 @@ function init() {
     player.vx = 0;
     player.vy = 0;
     player.rotation = 0;
+    player.imageIndex = 0;
+    player.eatingTimer = 0;
 
     // Reset game state
     gameState = 'playing';
@@ -306,11 +309,12 @@ function updatePlayer() {
     player.x = Math.max(player.width / 2, Math.min(canvas.width - player.width / 2, player.x));
     player.y = Math.max(player.height / 2, Math.min(canvas.height - player.height / 2, player.y));
 
-    // Alternate between images for animation
-    if (player.vx !== 0 || player.vy !== 0) {
-        if (Math.random() > 0.9) {
-            player.imageIndex = player.imageIndex === 0 ? 1 : 0;
-        }
+    // Handle eating animation timer
+    if (player.eatingTimer > 0) {
+        player.eatingTimer--;
+        player.imageIndex = 1; // Show eating face
+    } else {
+        player.imageIndex = 0; // Show normal face
     }
 }
 
@@ -389,6 +393,9 @@ function checkCollisions() {
             cloud.eaten = true;
             score++;
             document.getElementById('score').textContent = score;
+
+            // Trigger eating animation (show eating face for 15 frames)
+            player.eatingTimer = 15;
 
             // Play eat sound
             const eatSound = document.getElementById('eatSound');
