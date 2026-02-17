@@ -172,18 +172,27 @@ button:hover {
 /* Mobile responsive */
 @media (max-width: 900px) {
     #gameCanvas {
+        width: 100vw;
         max-width: 100%;
         height: auto;
     }
 
+    #gameContainer {
+        padding: 10px;
+    }
+
     h1 {
-        font-size: 2.5em;
+        font-size: 2em;
     }
 
     #gameInfo {
-        font-size: 1.2em;
+        font-size: 1em;
         flex-direction: column;
         gap: 10px;
+    }
+
+    .stat {
+        padding: 10px 20px;
     }
 
     button {
@@ -197,7 +206,15 @@ button:hover {
         padding: 40px 20px;
     }
 
+    #gameOver h2 {
+        font-size: 2em;
+    }
+
     #mobileControls {
         display: block;
+    }
+
+    #instructions {
+        font-size: 1em;
     }
 }

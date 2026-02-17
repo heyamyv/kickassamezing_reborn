@@ -151,6 +151,12 @@ function handleHit(e) {
         clickY = e.clientY - rect.top;
     }
 
+    // Scale coordinates to match canvas internal size
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    clickX *= scaleX;
+    clickY *= scaleY;
+
     if (!isMobile) {
         hammer.classList.add('hitting');
         setTimeout(() => hammer.classList.remove('hitting'), 200);
