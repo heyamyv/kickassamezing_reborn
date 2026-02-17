@@ -10,6 +10,12 @@ const hammer = document.getElementById('hammer');
 // Detect mobile
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
 
+// Adjust canvas size for mobile
+if (isMobile) {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
 // Load original game images
 const images = {
     dood: new Image(),
@@ -61,14 +67,23 @@ const holeRadius = 50;
 const doodHeight = 60; // How far the Dood pops up from the hole
 
 // Create 15 holes in a more organic layout (5 rows x 3 cols for vertical canvas)
-// Canvas is 600x800, leave margins
-for (let row = 0; row < 5; row++) {
-    for (let col = 0; col < 3; col++) {
-        // Base grid position centered with better spacing
-        const baseX = 150 + col * 150; // Start at 150, space by 150 (col 0: 150, col 1: 300, col 2: 450)
-        const baseY = 220 + row * 120; // Start at 220, space by 120
-        const offsetX = (Math.random() - 0.5) * 40; // Reduced offset -20 to +20
-        const offsetY = (Math.random() - 0.5) * 30; // Reduced offset -15 to +15
+// Dynamic positioning based on canvas size
+const cols = 3;
+const rows = 5;
+const marginX = canvas.width * 0.15; // 15% margin on sides
+const marginY = canvas.height * 0.15; // 15% margin top/bottom
+const availableWidth = canvas.width - (marginX * 2);
+const availableHeight = canvas.height - (marginY * 2);
+const spacingX = availableWidth / (cols - 1);
+const spacingY = availableHeight / (rows - 1);
+
+for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+        // Base grid position centered with dynamic spacing
+        const baseX = marginX + col * spacingX;
+        const baseY = marginY + row * spacingY;
+        const offsetX = (Math.random() - 0.5) * 40; // Random offset -20 to +20
+        const offsetY = (Math.random() - 0.5) * 30; // Random offset -15 to +15
 
         holes.push({
             x: baseX + offsetX,
@@ -340,13 +355,14 @@ function drawBackground() {
     ctx.fillStyle = skyGradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw curved grass hill (adjusted for vertical canvas)
+    // Draw curved grass hill (dynamic based on canvas size)
+    const hillTop = canvas.height * 0.15; // Hill starts at 15% from top
     ctx.fillStyle = '#228B22';
     ctx.beginPath();
-    ctx.moveTo(0, 150);
-    // Create wavy hill using quadratic curves
-    ctx.quadraticCurveTo(150, 130, 300, 150);
-    ctx.quadraticCurveTo(450, 170, canvas.width, 150);
+    ctx.moveTo(0, hillTop);
+    // Create wavy hill using quadratic curves (scaled to canvas width)
+    ctx.quadraticCurveTo(canvas.width * 0.25, hillTop - 20, canvas.width * 0.5, hillTop);
+    ctx.quadraticCurveTo(canvas.width * 0.75, hillTop + 20, canvas.width, hillTop);
     ctx.lineTo(canvas.width, canvas.height);
     ctx.lineTo(0, canvas.height);
     ctx.closePath();
