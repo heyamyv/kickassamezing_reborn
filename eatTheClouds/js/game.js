@@ -64,8 +64,7 @@ const player = {
     targetRotation: 0, // Target rotation for smooth interpolation
     vx: 0,
     vy: 0,
-    imageIndex: 0,  // 0 = normal face (dood1), 1 = eating face (dood2)
-    eatingTimer: 0  // Timer for eating animation
+    imageIndex: 0  // Always uses dood1 face during gameplay
 };
 
 // Keyboard state
@@ -93,8 +92,12 @@ function init() {
 
     // Reset game over screen styling
     const gameOverDiv = document.getElementById('gameOver');
+    const winDoodImage = document.getElementById('winDoodImage');
     if (gameOverDiv) {
         gameOverDiv.classList.remove('lost');
+    }
+    if (winDoodImage) {
+        winDoodImage.style.display = 'none';
     }
 
     // Reset player position
@@ -105,7 +108,6 @@ function init() {
     player.rotation = 0;
     player.targetRotation = 0;
     player.imageIndex = 0;
-    player.eatingTimer = 0;
 
     // Reset game state
     gameState = 'playing';
@@ -345,13 +347,8 @@ function updatePlayer() {
     player.x = Math.max(player.width / 2, Math.min(canvas.width - player.width / 2, player.x));
     player.y = Math.max(player.height / 2, Math.min(canvas.height - player.height / 2, player.y));
 
-    // Handle eating animation timer
-    if (player.eatingTimer > 0) {
-        player.eatingTimer--;
-        player.imageIndex = 1; // Show eating face
-    } else {
-        player.imageIndex = 0; // Show normal face
-    }
+    // Always use first face (no face switching during gameplay)
+    player.imageIndex = 0;
 }
 
 // Spawn a new cloud
@@ -465,9 +462,6 @@ function checkCollisions() {
             cloud.eaten = true;
             score++;
             document.getElementById('score').textContent = score;
-
-            // Trigger eating animation (show eating face for 15 frames)
-            player.eatingTimer = 15;
 
             // Play eat sound
             const eatSound = document.getElementById('eatSound');
@@ -679,15 +673,18 @@ function endGame(won, message) {
 
     const gameOverDiv = document.getElementById('gameOver');
     const gameOverText = document.getElementById('gameOverText');
+    const winDoodImage = document.getElementById('winDoodImage');
 
     gameOverText.textContent = message;
     gameOverDiv.classList.remove('hidden');
 
-    // Add red border for loss screens
-    if (!won) {
-        gameOverDiv.classList.add('lost');
-    } else {
+    // Show dood2 image on win screen only
+    if (won) {
         gameOverDiv.classList.remove('lost');
+        winDoodImage.style.display = 'block';
+    } else {
+        gameOverDiv.classList.add('lost');
+        winDoodImage.style.display = 'none';
     }
 
     const bgMusic = document.getElementById('bgMusic');
