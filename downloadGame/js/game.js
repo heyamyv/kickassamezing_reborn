@@ -13,7 +13,7 @@ if (isMobile) {
 
 // Calculate speed multiplier based on canvas height (baseline 400px)
 // Use more aggressive multiplier for mobile to compensate for larger screens
-const speedMultiplier = isMobile ? (canvas.height / 400) * 1.8 : 1;
+const speedMultiplier = isMobile ? (canvas.height / 400) * 2.5 : 1;
 
 // Game state
 let gameState = 'playing'; // playing, won, lost
