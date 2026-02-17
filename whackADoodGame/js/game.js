@@ -67,21 +67,22 @@ const holeRadius = 50;
 const doodHeight = 60; // How far the Dood pops up from the hole
 
 // Create 15 holes in a more organic layout (5 rows x 3 cols for vertical canvas)
-// Dynamic positioning based on canvas size
+// Dynamic positioning based on canvas size - ONLY in grass area (not sky)
 const cols = 3;
 const rows = 5;
 const marginX = canvas.width * 0.15; // 15% margin on sides
-const marginY = canvas.height * 0.15; // 15% margin top/bottom
+const grassStartY = canvas.height * 0.2; // Grass starts at 20% from top (below sky)
+const grassEndY = canvas.height * 0.95; // End at 95% (leave small margin at bottom)
 const availableWidth = canvas.width - (marginX * 2);
-const availableHeight = canvas.height - (marginY * 2);
+const availableHeight = grassEndY - grassStartY;
 const spacingX = availableWidth / (cols - 1);
 const spacingY = availableHeight / (rows - 1);
 
 for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
-        // Base grid position centered with dynamic spacing
+        // Base grid position centered with dynamic spacing - starting from grassStartY
         const baseX = marginX + col * spacingX;
-        const baseY = marginY + row * spacingY;
+        const baseY = grassStartY + row * spacingY;
         const offsetX = (Math.random() - 0.5) * 40; // Random offset -20 to +20
         const offsetY = (Math.random() - 0.5) * 30; // Random offset -15 to +15
 
@@ -356,13 +357,14 @@ function drawBackground() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Draw curved grass hill (dynamic based on canvas size)
-    const hillTop = canvas.height * 0.15; // Hill starts at 15% from top
+    // Hill should be at ~18% to leave room for holes starting at 20%
+    const hillTop = canvas.height * 0.18;
     ctx.fillStyle = '#228B22';
     ctx.beginPath();
     ctx.moveTo(0, hillTop);
     // Create wavy hill using quadratic curves (scaled to canvas width)
-    ctx.quadraticCurveTo(canvas.width * 0.25, hillTop - 20, canvas.width * 0.5, hillTop);
-    ctx.quadraticCurveTo(canvas.width * 0.75, hillTop + 20, canvas.width, hillTop);
+    ctx.quadraticCurveTo(canvas.width * 0.25, hillTop - 15, canvas.width * 0.5, hillTop);
+    ctx.quadraticCurveTo(canvas.width * 0.75, hillTop + 15, canvas.width, hillTop);
     ctx.lineTo(canvas.width, canvas.height);
     ctx.lineTo(0, canvas.height);
     ctx.closePath();
