@@ -140,11 +140,16 @@ document.getElementById('quitBtn').addEventListener('click', () => {
     bgMusic.pause();
 });
 
-// Mouse/touch tracking for hammer (only position, don't show yet)
-document.addEventListener('mousemove', (e) => {
-    hammer.style.left = e.clientX + 'px';
-    hammer.style.top = e.clientY + 'px';
-});
+// Mouse tracking for hammer (desktop: always show, mobile: hide until hit)
+if (!isMobile) {
+    // Desktop: show hammer following mouse
+    hammer.style.display = 'block';
+    hammer.style.opacity = '1';
+    document.addEventListener('mousemove', (e) => {
+        hammer.style.left = e.clientX + 'px';
+        hammer.style.top = e.clientY + 'px';
+    });
+}
 
 // Canvas click/touch handler
 function handleHit(e) {
@@ -178,14 +183,22 @@ function handleHit(e) {
     // Show hammer at click/touch position
     hammer.style.left = screenX + 'px';
     hammer.style.top = screenY + 'px';
-    hammer.style.display = 'block';
-    hammer.style.opacity = '1';
-    hammer.classList.add('hitting');
-    setTimeout(() => {
-        hammer.classList.remove('hitting');
-        hammer.style.opacity = '0';
-        setTimeout(() => hammer.style.display = 'none', 100);
-    }, 200);
+
+    if (isMobile) {
+        // Mobile: temporarily show hammer on hit
+        hammer.style.display = 'block';
+        hammer.style.opacity = '1';
+        hammer.classList.add('hitting');
+        setTimeout(() => {
+            hammer.classList.remove('hitting');
+            hammer.style.opacity = '0';
+            setTimeout(() => hammer.style.display = 'none', 100);
+        }, 200);
+    } else {
+        // Desktop: just do hitting animation
+        hammer.classList.add('hitting');
+        setTimeout(() => hammer.classList.remove('hitting'), 200);
+    }
 
     let hit = false;
 

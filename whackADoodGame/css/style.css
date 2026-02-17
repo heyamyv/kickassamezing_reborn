@@ -158,8 +158,14 @@ h1 {
     background: url('../assets/images/hammer.png') no-repeat center;
     background-size: contain;
     transition: transform 0.1s;
-    opacity: 0;
-    display: none;
+}
+
+/* Hide hammer on mobile by default */
+@media (max-width: 768px) {
+    #hammer {
+        opacity: 0;
+        display: none;
+    }
 }
 
 #hammer.hitting {
