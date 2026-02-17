@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Images</title>
+</head>
+<body>
+    <h1>Testing Image Loading</h1>
+    <div id="status"></div>
+    <div>
+        <h2>Dood 1:</h2>
+        <img src="assets/images/dood1.png" style="border: 1px solid black;">
+        <h2>Dood 2:</h2>
+        <img src="assets/images/dood2.png" style="border: 1px solid black;">
+        <h2>Cloud:</h2>
+        <img src="assets/images/cloud_original.png" style="border: 1px solid black;">
+        <h2>Airplane:</h2>
+        <img src="assets/images/airplane_original.png" style="border: 1px solid black;">
+        <h2>UFO:</h2>
+        <img src="assets/images/ufo_original.png" style="border: 1px solid black;">
+        <h2>Sun:</h2>
+        <img src="assets/images/sun_original.png" style="border: 1px solid black;">
+    </div>
+    <script>
+        let loaded = 0;
+        document.querySelectorAll('img').forEach(img => {
+            img.onload = () => {
+                loaded++;
+                document.getElementById('status').textContent = `Loaded ${loaded}/6 images`;
+            };
+            img.onerror = () => {
+                console.error('Failed to load:', img.src);
+                document.getElementById('status').textContent = 'Error loading images!';
+            };
+        });
+    </script>
+</body>
+</html>

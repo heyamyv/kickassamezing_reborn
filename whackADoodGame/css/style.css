@@ -1,0 +1,210 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #5a4570;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: white;
+    overflow: hidden;
+}
+
+#gameContainer {
+    position: relative;
+    text-align: center;
+}
+
+.screen {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+    min-width: 600px;
+}
+
+.screen.hidden {
+    display: none;
+}
+
+h1 {
+    font-size: 3em;
+    margin-bottom: 20px;
+    color: #ff6b6b;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.subtitle {
+    font-size: 1.3em;
+    margin-bottom: 30px;
+    color: #ffd93d;
+}
+
+.big-btn {
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    margin: 10px;
+    border-radius: 30px;
+    font-size: 1.3em;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(238, 90, 36, 0.4);
+}
+
+.big-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(238, 90, 36, 0.6);
+}
+
+.big-btn:active {
+    transform: translateY(0);
+}
+
+.instructions-text {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 15px;
+    margin: 20px 0;
+    line-height: 1.8;
+    font-size: 1.1em;
+}
+
+.instructions-text p {
+    margin: 15px 0;
+}
+
+#gameHeader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin-top: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.stat {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #ffd93d;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.stat span {
+    color: #ff6b6b;
+    font-size: 1.3em;
+}
+
+#gameCanvas {
+    border: 5px solid #ffd700;
+    border-radius: 15px;
+    background: #87CEEB;
+    display: block;
+    margin: 0 auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    cursor: none;
+}
+
+#hammer {
+    position: fixed;
+    width: 80px;
+    height: 80px;
+    pointer-events: none;
+    z-index: 1000;
+    transform: translate(-50%, -50%);
+    background: url('../assets/images/hammer.png') no-repeat center;
+    background-size: contain;
+    transition: transform 0.1s;
+}
+
+#hammer.hitting {
+    animation: hammerHit 0.2s;
+}
+
+@keyframes hammerHit {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    50% { transform: translate(-50%, -50%) rotate(-30deg) scale(0.9); }
+    100% { transform: translate(-50%, -50%) rotate(0deg); }
+}
+
+#gameOver {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.95);
+    padding: 60px 100px;
+    border-radius: 25px;
+    border: 5px solid #ff6b6b;
+    box-shadow: 0 15px 60px rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    text-align: center;
+    animation: slideIn 0.5s;
+    min-width: 850px;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+#gameOver.hidden {
+    display: none;
+}
+
+#gameOverTitle {
+    font-size: 3em;
+    margin-bottom: 20px;
+    color: #ffd93d;
+}
+
+#gameOverText {
+    font-size: 2em;
+    margin-bottom: 40px;
+    color: #ff6b6b;
+}
+
+button {
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    color: white;
+    border: none;
+    padding: 15px 45px;
+    margin: 15px;
+    border-radius: 30px;
+    font-size: 1.5em;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: bold;
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(238, 90, 36, 0.5);
+}
+
+#gameScreen {
+    background: transparent;
+    padding: 20px;
+}

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eat The Clouds - HTML5</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <h1>Eat The Clouds</h1>
+        <div id="gameInfo">
+            <div class="stat">Score: <span id="score">0</span> / 10</div>
+            <div class="stat">Time: <span id="timer">60</span> sec.</div>
+        </div>
+        <canvas id="gameCanvas" width="850" height="600"></canvas>
+        <div id="loading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 24px; color: white;">
+            Loading game assets...
+        </div>
+        <div id="gameOver" class="hidden">
+            <h2 id="gameOverText"></h2>
+            <button id="restartBtn">Play Again</button>
+            <button id="mainMenuBtn">Main Menu</button>
+        </div>
+        <div id="instructions">
+            <p>Use Arrow Keys to move Dood and eat all 10 clouds!</p>
+            <p>Avoid obstacles: airplanes, birds, UFOs, parachutes</p>
+        </div>
+    </div>
+    <audio id="eatSound" src="assets/sounds/sound1.mp3" preload="auto"></audio>
+    <audio id="bgMusic" src="assets/sounds/sound2.mp3" loop preload="auto"></audio>
+    <script src="js/game.js"></script>
+</body>
+</html>

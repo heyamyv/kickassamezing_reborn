@@ -1,0 +1,15 @@
+Objective:  
+--- RECORDSEPARATOR ---
+Eating clouds is Dood's lifelong dream.  
+--- RECORDSEPARATOR ---
+Help Dood eat as many clouds before 
+--- RECORDSEPARATOR ---
+time runs out!  Beware of collisions 
+--- RECORDSEPARATOR ---
+with unsuspecting objects in the sky!
+--- RECORDSEPARATOR ---
+Controls: 
+--- RECORDSEPARATOR ---
+Move Dood's FACE using the arrow 
+--- RECORDSEPARATOR ---
+keys.  
