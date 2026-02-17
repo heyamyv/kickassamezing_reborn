@@ -13,8 +13,8 @@ const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/
 // Adjust canvas size for mobile
 if (isMobile) {
     canvas.width = window.innerWidth;
-    // Account for header height (60px min-height) and some padding
-    canvas.height = window.innerHeight - 80;
+    // Account for header height (60px) and ensure bottom is visible
+    canvas.height = window.innerHeight - 70;
 }
 
 // Load original game images
@@ -73,7 +73,7 @@ const cols = 3;
 const rows = 5;
 const marginX = canvas.width * 0.15; // 15% margin on sides
 const grassStartY = canvas.height * 0.35; // Grass starts at 35% from top (well below sky)
-const grassEndY = canvas.height * 0.95; // End at 95% (leave small margin at bottom)
+const grassEndY = canvas.height * 0.88; // End at 88% (leave margin at bottom for visibility)
 const availableWidth = canvas.width - (marginX * 2);
 const availableHeight = grassEndY - grassStartY;
 const spacingX = availableWidth / (cols - 1);
