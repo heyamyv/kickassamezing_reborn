@@ -342,9 +342,36 @@ function updatePlayer() {
 function spawnNewCloud() {
     if (cloudsSpawned >= totalCloudCount) return;
 
+    const minDistance = 200; // Minimum distance from existing clouds
+    let attempts = 0;
+    let newX, newY, tooClose;
+
+    // Try to find a position that's not too close to existing clouds
+    do {
+        newX = Math.random() * (canvas.width - 180) + 90;
+        newY = Math.random() * (canvas.height - 400) + 70; // Keep clouds in upper 3/4 of screen
+        tooClose = false;
+        attempts++;
+
+        // Check distance from all existing clouds
+        for (let cloud of clouds) {
+            const dx = newX - cloud.x;
+            const dy = newY - cloud.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < minDistance) {
+                tooClose = true;
+                break;
+            }
+        }
+
+        // After 10 attempts, just place it anywhere
+        if (attempts >= 10) break;
+    } while (tooClose);
+
     clouds.push({
-        x: Math.random() * (canvas.width - 180) + 90,
-        y: Math.random() * (canvas.height - 400) + 70, // Keep clouds in upper 3/4 of screen
+        x: newX,
+        y: newY,
         width: 168,
         height: 84,
         eaten: false,
