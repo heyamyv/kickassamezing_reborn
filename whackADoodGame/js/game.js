@@ -73,7 +73,7 @@ const doodHeight = 60; // How far the Dood pops up from the hole
 const cols = 3;
 const rows = 5;
 const marginX = canvas.width * 0.15; // 15% margin on sides
-const grassStartY = canvas.height * 0.35; // Grass starts at 35% from top (well below sky)
+const grassStartY = canvas.height * 0.38; // Grass starts at 38% from top (ensure no holes touch sky)
 const grassEndY = canvas.height * 0.88; // End at 88% (leave margin at bottom for visibility)
 const availableWidth = canvas.width - (marginX * 2);
 const availableHeight = grassEndY - grassStartY;
@@ -85,8 +85,8 @@ for (let row = 0; row < rows; row++) {
         // Base grid position centered with dynamic spacing - starting from grassStartY
         const baseX = marginX + col * spacingX;
         const baseY = grassStartY + row * spacingY;
-        const offsetX = (Math.random() - 0.5) * 40; // Random offset -20 to +20
-        const offsetY = (Math.random() - 0.5) * 30; // Random offset -15 to +15
+        const offsetX = (Math.random() - 0.5) * 30; // Random offset -15 to +15 (reduced)
+        const offsetY = (Math.random() - 0.5) * 20; // Random offset -10 to +10 (reduced from -15 to +15)
 
         holes.push({
             x: baseX + offsetX,
@@ -383,8 +383,8 @@ function drawBackground() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Draw curved grass hill (dynamic based on canvas size)
-    // Hill should be at ~32% to leave room for holes starting at 35%
-    const hillTop = canvas.height * 0.32;
+    // Hill should be at ~35% to leave room for holes starting at 38%
+    const hillTop = canvas.height * 0.35;
     ctx.fillStyle = '#228B22';
     ctx.beginPath();
     ctx.moveTo(0, hillTop);
