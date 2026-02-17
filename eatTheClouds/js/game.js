@@ -16,6 +16,7 @@ let gameState = 'playing'; // playing, won, lost
 let score = 0;
 let timeLeft = 20;
 let gameTimer;
+let invulnerabilityTimer = 0; // Grace period at game start
 
 // Load original game images
 const images = {
@@ -102,6 +103,7 @@ function init() {
     gameState = 'playing';
     score = 0;
     timeLeft = 20;
+    invulnerabilityTimer = 90; // 1.5 seconds of invulnerability at 60fps
     document.getElementById('timer').textContent = timeLeft;
 
     // Setup mobile controls if on mobile
@@ -115,12 +117,13 @@ function init() {
     }
 
     // Create initial clouds (scaled up bigger) - distributed throughout vertical space - 20% larger
+    // Avoid spawning too close to player's starting position (bottom center)
     cloudsSpawned = 0;
     nextSpawnScore = 2;
     for (let i = 0; i < initialCloudCount; i++) {
         clouds.push({
             x: Math.random() * (canvas.width - 180) + 90,
-            y: Math.random() * (canvas.height - 300) + 70,
+            y: Math.random() * (canvas.height - 400) + 70, // Keep clouds in upper 3/4 of screen
             width: 168,
             height: 84,
             eaten: false,
@@ -158,10 +161,19 @@ function createObstacles() {
     });
 
     // Birds - 50% larger - spread vertically with wavy flight
+    // Avoid spawning near player's starting position (center horizontally, bottom vertically)
     for (let i = 0; i < 3; i++) {
+        let birdX;
+        // Spawn birds away from center (player starts at center)
+        if (Math.random() > 0.5) {
+            birdX = Math.random() * (canvas.width * 0.3); // Left third
+        } else {
+            birdX = canvas.width * 0.7 + Math.random() * (canvas.width * 0.3); // Right third
+        }
+
         obstacles.push({
             type: 'bird',
-            x: Math.random() * canvas.width,
+            x: birdX,
             y: canvas.height * 0.25 + i * (canvas.height * 0.2),
             baseY: canvas.height * 0.25 + i * (canvas.height * 0.2),
             width: 68,
@@ -187,9 +199,17 @@ function createObstacles() {
     });
 
     // Parachute - 200% larger (3x size) with gentle sway
+    // Spawn away from center to avoid immediate collision with player
+    let parachuteX;
+    if (Math.random() > 0.5) {
+        parachuteX = Math.random() * (canvas.width * 0.3); // Left third
+    } else {
+        parachuteX = canvas.width * 0.7 + Math.random() * (canvas.width * 0.3); // Right third
+    }
+
     obstacles.push({
         type: 'parachute',
-        x: Math.random() * canvas.width,
+        x: parachuteX,
         y: 0,
         width: 280,
         height: 440,
@@ -324,7 +344,7 @@ function spawnNewCloud() {
 
     clouds.push({
         x: Math.random() * (canvas.width - 180) + 90,
-        y: Math.random() * (canvas.height - 300) + 70,
+        y: Math.random() * (canvas.height - 400) + 70, // Keep clouds in upper 3/4 of screen
         width: 168,
         height: 84,
         eaten: false,
@@ -343,6 +363,15 @@ function updateClouds() {
             cloud.renderY = cloud.y + Math.sin(cloud.floatOffset) * 5;
         }
     });
+
+    // Check if there are no uneaten clouds left - spawn 2 immediately to avoid getting stuck
+    const uneatenClouds = clouds.filter(c => !c.eaten).length;
+    if (uneatenClouds === 0 && cloudsSpawned < totalCloudCount) {
+        spawnNewCloud();
+        if (cloudsSpawned < totalCloudCount) {
+            spawnNewCloud();
+        }
+    }
 }
 
 // Update obstacles
@@ -402,9 +431,12 @@ function checkCollisions() {
             eatSound.currentTime = 0;
             eatSound.play().catch(e => console.log('Sound play failed'));
 
-            // Spawn a new cloud every 2 clouds eaten (until we reach the total)
+            // Spawn 2 new clouds every 2 clouds eaten (until we reach the total)
             if (score >= nextSpawnScore && cloudsSpawned < totalCloudCount) {
                 spawnNewCloud();
+                if (cloudsSpawned < totalCloudCount) {
+                    spawnNewCloud();
+                }
                 nextSpawnScore += 2;
             }
 
@@ -414,8 +446,17 @@ function checkCollisions() {
         }
     });
 
-    // Check obstacle collisions
+    // Check obstacle collisions (skip during invulnerability period)
+    if (invulnerabilityTimer > 0) {
+        invulnerabilityTimer--;
+    }
+
     obstacles.forEach(obstacle => {
+        // Skip collision check during invulnerability period
+        if (invulnerabilityTimer > 0) {
+            return;
+        }
+
         // Skip collision check if obstacle is not substantially on-screen (at least 50% visible)
         const obstacleRight = obstacle.x + obstacle.width / 2;
         const obstacleLeft = obstacle.x - obstacle.width / 2;
@@ -446,18 +487,18 @@ function checkCollisions() {
 }
 
 function isColliding(obj1, obj2) {
-    // Reduce collision area more aggressively for large obstacles
+    // Reduce collision area very aggressively for large obstacles
     let obstaclePadding = 0;
     if (obj2.type === 'airplane' || obj2.type === 'ufo') {
-        obstaclePadding = 0.35; // 70% reduction (35% on each side)
+        obstaclePadding = 0.4; // 80% reduction (40% on each side)
     } else if (obj2.type === 'parachute') {
-        obstaclePadding = 0.3; // 60% reduction (30% on each side)
+        obstaclePadding = 0.35; // 70% reduction (35% on each side)
     } else if (obj2.type === 'bird') {
-        obstaclePadding = 0.25; // 50% reduction (25% on each side)
+        obstaclePadding = 0.3; // 60% reduction (30% on each side)
     }
 
-    // Also reduce player hitbox by 20% (10% on each side) since sprite has transparent areas
-    const playerPadding = 0.1;
+    // Also reduce player hitbox by 30% (15% on each side) since sprite has transparent areas
+    const playerPadding = 0.15;
 
     const obj1Left = obj1.x - obj1.width / 2 + (obj1.width * playerPadding);
     const obj1Right = obj1.x + obj1.width / 2 - (obj1.width * playerPadding);
