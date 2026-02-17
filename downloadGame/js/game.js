@@ -12,7 +12,8 @@ if (isMobile) {
 }
 
 // Calculate speed multiplier based on canvas height (baseline 400px)
-const speedMultiplier = canvas.height / 400;
+// Use more aggressive multiplier for mobile to compensate for larger screens
+const speedMultiplier = isMobile ? (canvas.height / 400) * 1.8 : 1;
 
 // Game state
 let gameState = 'playing'; // playing, won, lost
@@ -28,6 +29,8 @@ const fileTypes = [
     { name: 'Dubai', isVirus: false, color: '#cccccc' },
     { name: 'evanescence sound track', isVirus: false, color: '#cccccc' },
     { name: 'Really good movie', isVirus: false, color: '#cccccc' },
+    { name: 'burger menu', isVirus: false, color: '#cccccc' },
+    { name: 'kroger belt catalog', isVirus: false, color: '#cccccc' },
     { name: '$_for_nigerian_prince', isVirus: true, color: '#cccccc' },
     { name: 'openME!.vir', isVirus: true, color: '#cccccc' },
     { name: 'virusforyou.zip', isVirus: true, color: '#cccccc' },
