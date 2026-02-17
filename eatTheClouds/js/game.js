@@ -358,7 +358,7 @@ function updatePlayer() {
 function spawnNewCloud() {
     if (cloudsSpawned >= totalCloudCount) return;
 
-    const minDistance = 500; // Minimum distance from existing clouds
+    const minDistance = canvas.width; // Minimum distance from existing clouds (full canvas width)
     let attempts = 0;
     let newX, newY, tooClose;
 
