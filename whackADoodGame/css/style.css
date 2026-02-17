@@ -38,7 +38,11 @@ body {
 }
 
 .screen.hidden {
-    display: none;
+    display: none !important;
+}
+
+.screen.hidden * {
+    display: none !important;
 }
 
 h1 {
@@ -249,7 +253,7 @@ button:hover {
     box-shadow: 0 5px 20px rgba(238, 90, 36, 0.5);
 }
 
-#gameScreen {
+#gameScreen:not(.hidden) {
     background: transparent;
     padding: 20px;
     display: flex;
@@ -259,9 +263,14 @@ button:hover {
     align-items: center;
 }
 
+#gameScreen.hidden {
+    display: none !important;
+    visibility: hidden !important;
+}
+
 /* Desktop responsive sizing */
 @media (min-width: 769px) {
-    #gameCanvas {
+    #gameScreen:not(.hidden) #gameCanvas {
         max-width: min(600px, 90vw);
         max-height: min(800px, 85vh);
         width: auto !important;
@@ -269,25 +278,29 @@ button:hover {
         object-fit: contain;
     }
 
-    #gameHeader {
+    #gameScreen:not(.hidden) #gameHeader {
         max-width: min(600px, 90vw);
         width: auto;
         margin: 0 auto 20px auto;
     }
 
-    #gameScreen {
+    #gameScreen:not(.hidden) {
         padding: 40px 20px;
+    }
+
+    #gameScreen.hidden {
+        display: none !important;
     }
 }
 
 /* Extra large screens */
 @media (min-width: 1200px) and (min-height: 1000px) {
-    #gameCanvas {
+    #gameScreen:not(.hidden) #gameCanvas {
         max-width: 700px;
         max-height: 950px;
     }
 
-    #gameHeader {
+    #gameScreen:not(.hidden) #gameHeader {
         max-width: 700px;
     }
 }
