@@ -358,7 +358,8 @@ function updatePlayer() {
 function spawnNewCloud() {
     if (cloudsSpawned >= totalCloudCount) return;
 
-    const minDistance = canvas.width; // Minimum distance from existing clouds (full canvas width)
+    const minDistanceX = canvas.width * 0.6; // Minimum horizontal distance (60% of canvas width)
+    const minDistanceY = canvas.height * 0.4; // Minimum vertical distance (40% of canvas height)
     let attempts = 0;
     let newX, newY, tooClose;
 
@@ -369,13 +370,12 @@ function spawnNewCloud() {
         tooClose = false;
         attempts++;
 
-        // Check distance from all existing clouds
+        // Check distance from all existing clouds (separate X and Y checks)
         for (let cloud of clouds) {
-            const dx = newX - cloud.x;
-            const dy = newY - cloud.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
+            const dx = Math.abs(newX - cloud.x);
+            const dy = Math.abs(newY - cloud.y);
 
-            if (distance < minDistance) {
+            if (dx < minDistanceX && dy < minDistanceY) {
                 tooClose = true;
                 break;
             }
