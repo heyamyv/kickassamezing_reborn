@@ -56,6 +56,8 @@ h1 {
     display: block;
     margin: 0 auto;
     box-shadow: 0 8px 30px rgba(74, 158, 255, 0.4);
+    max-width: 100%;
+    height: auto;
 }
 
 #gameOver {
@@ -109,4 +111,93 @@ button:hover {
 
 #instructions p {
     margin: 5px 0;
+}
+
+/* Mobile virtual controls */
+#mobileControls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.dpad {
+    position: relative;
+    width: 150px;
+    height: 150px;
+}
+
+.dpad-btn {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: rgba(74, 158, 255, 0.7);
+    border: 3px solid #4a9eff;
+    border-radius: 10px;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.dpad-btn:active {
+    background: rgba(74, 158, 255, 0.9);
+    transform: scale(0.95);
+}
+
+.dpad-btn.up {
+    top: 0;
+    left: 50px;
+}
+
+.dpad-btn.down {
+    bottom: 0;
+    left: 50px;
+}
+
+.dpad-btn.left {
+    top: 50px;
+    left: 0;
+}
+
+.dpad-btn.right {
+    top: 50px;
+    right: 0;
+}
+
+/* Mobile responsive */
+@media (max-width: 900px) {
+    #gameCanvas {
+        max-width: 100%;
+        height: auto;
+    }
+
+    h1 {
+        font-size: 2.5em;
+    }
+
+    #gameInfo {
+        font-size: 1.2em;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    button {
+        font-size: 1.2em;
+        padding: 12px 30px;
+    }
+
+    #gameOver {
+        min-width: auto;
+        width: 90%;
+        padding: 40px 20px;
+    }
+
+    #mobileControls {
+        display: block;
+    }
 }

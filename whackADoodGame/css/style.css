@@ -119,6 +119,15 @@ h1 {
     margin: 0 auto;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
     cursor: none;
+    max-width: 100%;
+    height: auto;
+}
+
+@media (max-width: 900px) {
+    #gameCanvas {
+        width: 100%;
+        height: auto;
+    }
 }
 
 #hammer {
@@ -207,4 +216,53 @@ button:hover {
 #gameScreen {
     background: transparent;
     padding: 20px;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2em;
+    }
+
+    .big-btn {
+        font-size: 1.1em;
+        padding: 12px 30px;
+    }
+
+    #gameHeader {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .stat {
+        font-size: 1.2em;
+    }
+
+    #quitBtn {
+        width: 60px !important;
+        height: 60px !important;
+        font-size: 16px !important;
+        margin-left: 0 !important;
+    }
+
+    button {
+        font-size: 1.2em;
+        padding: 12px 35px;
+    }
+
+    #gameOver {
+        min-width: auto;
+        width: 90%;
+        padding: 40px 20px;
+    }
+
+    .screen {
+        min-width: auto;
+        padding: 20px;
+    }
+
+    .instructions-text {
+        font-size: 1em;
+    }
 }

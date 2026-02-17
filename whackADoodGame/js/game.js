@@ -7,6 +7,9 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const hammer = document.getElementById('hammer');
 
+// Detect mobile
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+
 // Load original game images
 const images = {
     dood: new Image(),
@@ -119,22 +122,39 @@ document.getElementById('quitBtn').addEventListener('click', () => {
     bgMusic.pause();
 });
 
-// Mouse tracking for hammer
-document.addEventListener('mousemove', (e) => {
-    hammer.style.left = e.clientX + 'px';
-    hammer.style.top = e.clientY + 'px';
-});
+// Mouse tracking for hammer (desktop only)
+if (!isMobile) {
+    document.addEventListener('mousemove', (e) => {
+        hammer.style.left = e.clientX + 'px';
+        hammer.style.top = e.clientY + 'px';
+    });
+} else {
+    // Hide hammer on mobile
+    hammer.style.display = 'none';
+}
 
-// Canvas click handler
-canvas.addEventListener('click', (e) => {
+// Canvas click/touch handler
+function handleHit(e) {
     if (gameState !== 'playing') return;
 
     const rect = canvas.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const clickY = e.clientY - rect.top;
+    let clickX, clickY;
 
-    hammer.classList.add('hitting');
-    setTimeout(() => hammer.classList.remove('hitting'), 200);
+    // Handle both mouse and touch events
+    if (e.type === 'touchstart' || e.type === 'touchend') {
+        e.preventDefault();
+        const touch = e.touches[0] || e.changedTouches[0];
+        clickX = touch.clientX - rect.left;
+        clickY = touch.clientY - rect.top;
+    } else {
+        clickX = e.clientX - rect.left;
+        clickY = e.clientY - rect.top;
+    }
+
+    if (!isMobile) {
+        hammer.classList.add('hitting');
+        setTimeout(() => hammer.classList.remove('hitting'), 200);
+    }
 
     let hit = false;
 
@@ -152,7 +172,11 @@ canvas.addEventListener('click', (e) => {
     });
 
     // No sound on miss - only play sound when you hit a Dood
-});
+}
+
+canvas.addEventListener('click', handleHit);
+canvas.addEventListener('touchstart', handleHit);
+canvas.addEventListener('touchend', handleHit);
 
 function isClickInHole(x, y, hole) {
     // Make hit detection based on a rectangular area covering the Dood

@@ -2,6 +2,9 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// Detect mobile
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+
 // Game state
 let gameState = 'playing'; // playing, won, lost
 let score = 0;
@@ -71,6 +74,20 @@ function init() {
     // Hide loading message
     const loadingDiv = document.getElementById('loading');
     if (loadingDiv) loadingDiv.style.display = 'none';
+
+    // Show mobile controls if on mobile
+    if (isMobile) {
+        const mobileControls = document.getElementById('mobileControls');
+        if (mobileControls) {
+            mobileControls.classList.remove('hidden');
+            setupMobileControls();
+        }
+        // Update instructions for mobile
+        const controlsText = document.getElementById('controlsText');
+        if (controlsText) {
+            controlsText.textContent = 'Use on-screen controls to move Dood and eat all 10 clouds!';
+        }
+    }
 
     // Create clouds (scaled up bigger)
     for (let i = 0; i < cloudCount; i++) {
@@ -170,6 +187,38 @@ document.addEventListener('keydown', (e) => {
 document.addEventListener('keyup', (e) => {
     keys[e.key] = false;
 });
+
+// Mobile controls setup
+function setupMobileControls() {
+    const buttons = document.querySelectorAll('.dpad-btn');
+
+    buttons.forEach(btn => {
+        const key = btn.dataset.key;
+
+        // Touch start - activate key
+        btn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            keys[key] = true;
+        });
+
+        // Touch end - deactivate key
+        btn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            keys[key] = false;
+        });
+
+        // Also handle mouse for testing
+        btn.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            keys[key] = true;
+        });
+
+        btn.addEventListener('mouseup', (e) => {
+            e.preventDefault();
+            keys[key] = false;
+        });
+    });
+}
 
 // Update player
 function updatePlayer() {
