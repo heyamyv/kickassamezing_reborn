@@ -11,6 +11,9 @@ if (isMobile) {
     canvas.height = window.innerHeight - 150;
 }
 
+// Calculate speed multiplier based on canvas height (baseline 400px)
+const speedMultiplier = canvas.height / 400;
+
 // Game state
 let gameState = 'playing'; // playing, won, lost
 let score = 0;
@@ -154,7 +157,7 @@ function spawnFile() {
             y: y,
             width: width,
             height: height,
-            speed: 1 + Math.random() * 0.5,
+            speed: (1 + Math.random() * 0.5) * speedMultiplier,
             size: getRandomFileSize(),
             ...fileType
         });
