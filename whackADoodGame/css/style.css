@@ -261,7 +261,7 @@ button:hover {
         align-items: center;
     }
 
-    #mainMenu, #instructionsScreen {
+    #mainMenu:not(.hidden), #instructionsScreen:not(.hidden) {
         width: 100vw !important;
         height: 100vh !important;
         display: flex !important;
