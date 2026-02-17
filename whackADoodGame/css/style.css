@@ -96,6 +96,7 @@ h1 {
     align-items: center;
     gap: 30px;
     margin-top: 20px;
+    order: 2;
     background: rgba(0, 0, 0, 0.6);
     padding: 15px;
     border-radius: 15px;
@@ -124,6 +125,7 @@ h1 {
     cursor: none;
     max-width: 100%;
     height: auto;
+    order: 1;
 }
 
 @media (max-width: 768px) {
@@ -242,6 +244,8 @@ button:hover {
 #gameScreen {
     background: transparent;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Mobile optimizations */
@@ -327,6 +331,8 @@ button:hover {
         min-height: 60px;
         width: 100vw;
         box-sizing: border-box;
+        order: 1;
+        margin-top: 0;
     }
 
     #gameCanvas {
@@ -338,6 +344,7 @@ button:hover {
         margin: 0;
         display: block;
         max-height: calc(100vh - 60px);
+        order: 2;
     }
 
     .stat {
