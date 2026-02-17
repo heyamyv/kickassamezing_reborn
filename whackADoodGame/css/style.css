@@ -360,6 +360,8 @@ button:hover {
         display: flex;
         flex-direction: column;
         background: transparent;
+        overflow: hidden;
+        box-sizing: border-box;
     }
 
     #gameHeader {
@@ -387,8 +389,9 @@ button:hover {
         border-radius: 0;
         margin: 0;
         display: block;
-        max-height: calc(100vh - 60px);
+        max-height: calc(100vh - 80px);
         order: 2;
+        touch-action: none;
     }
 
     .stat {

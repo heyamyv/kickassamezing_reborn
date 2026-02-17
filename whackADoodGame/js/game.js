@@ -13,8 +13,8 @@ const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/
 // Adjust canvas size for mobile
 if (isMobile) {
     canvas.width = window.innerWidth;
-    // Account for header height (60px min-height)
-    canvas.height = window.innerHeight - 60;
+    // Account for header height (60px min-height) and some padding
+    canvas.height = window.innerHeight - 80;
 }
 
 // Load original game images
