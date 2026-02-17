@@ -13,7 +13,8 @@ const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/
 // Adjust canvas size for mobile
 if (isMobile) {
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    // Account for header height (approximately 70px)
+    canvas.height = window.innerHeight - 70;
 }
 
 // Load original game images
@@ -71,7 +72,7 @@ const doodHeight = 60; // How far the Dood pops up from the hole
 const cols = 3;
 const rows = 5;
 const marginX = canvas.width * 0.15; // 15% margin on sides
-const grassStartY = canvas.height * 0.2; // Grass starts at 20% from top (below sky)
+const grassStartY = canvas.height * 0.28; // Grass starts at 28% from top (well below sky)
 const grassEndY = canvas.height * 0.95; // End at 95% (leave small margin at bottom)
 const availableWidth = canvas.width - (marginX * 2);
 const availableHeight = grassEndY - grassStartY;
@@ -139,28 +140,10 @@ document.getElementById('quitBtn').addEventListener('click', () => {
     bgMusic.pause();
 });
 
-// Mouse/touch tracking for hammer
+// Mouse/touch tracking for hammer (only position, don't show yet)
 document.addEventListener('mousemove', (e) => {
     hammer.style.left = e.clientX + 'px';
     hammer.style.top = e.clientY + 'px';
-});
-
-// Touch tracking for hammer on mobile
-document.addEventListener('touchmove', (e) => {
-    if (e.touches.length > 0) {
-        const touch = e.touches[0];
-        hammer.style.left = touch.clientX + 'px';
-        hammer.style.top = touch.clientY + 'px';
-    }
-});
-
-// Show hammer at touch start position
-document.addEventListener('touchstart', (e) => {
-    if (e.touches.length > 0) {
-        const touch = e.touches[0];
-        hammer.style.left = touch.clientX + 'px';
-        hammer.style.top = touch.clientY + 'px';
-    }
 });
 
 // Canvas click/touch handler
@@ -171,12 +154,17 @@ function handleHit(e) {
     let clickX, clickY;
 
     // Handle both mouse and touch events
+    let screenX, screenY;
     if (e.type === 'touchstart' || e.type === 'touchend') {
         e.preventDefault();
         const touch = e.touches[0] || e.changedTouches[0];
-        clickX = touch.clientX - rect.left;
-        clickY = touch.clientY - rect.top;
+        screenX = touch.clientX;
+        screenY = touch.clientY;
+        clickX = screenX - rect.left;
+        clickY = screenY - rect.top;
     } else {
+        screenX = e.clientX;
+        screenY = e.clientY;
         clickX = e.clientX - rect.left;
         clickY = e.clientY - rect.top;
     }
@@ -187,10 +175,17 @@ function handleHit(e) {
     clickX *= scaleX;
     clickY *= scaleY;
 
-    if (!isMobile) {
-        hammer.classList.add('hitting');
-        setTimeout(() => hammer.classList.remove('hitting'), 200);
-    }
+    // Show hammer at click/touch position
+    hammer.style.left = screenX + 'px';
+    hammer.style.top = screenY + 'px';
+    hammer.style.display = 'block';
+    hammer.style.opacity = '1';
+    hammer.classList.add('hitting');
+    setTimeout(() => {
+        hammer.classList.remove('hitting');
+        hammer.style.opacity = '0';
+        setTimeout(() => hammer.style.display = 'none', 100);
+    }, 200);
 
     let hit = false;
 
@@ -357,8 +352,8 @@ function drawBackground() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Draw curved grass hill (dynamic based on canvas size)
-    // Hill should be at ~18% to leave room for holes starting at 20%
-    const hillTop = canvas.height * 0.18;
+    // Hill should be at ~25% to leave room for holes starting at 28%
+    const hillTop = canvas.height * 0.25;
     ctx.fillStyle = '#228B22';
     ctx.beginPath();
     ctx.moveTo(0, hillTop);
