@@ -60,12 +60,12 @@ const holes = [];
 const holeRadius = 50;
 const doodHeight = 60; // How far the Dood pops up from the hole
 
-// Create 15 holes in a more organic layout (based on grid with random offsets)
-for (let row = 0; row < 3; row++) {
-    for (let col = 0; col < 5; col++) {
+// Create 15 holes in a more organic layout (5 rows x 3 cols for vertical canvas)
+for (let row = 0; row < 5; row++) {
+    for (let col = 0; col < 3; col++) {
         // Base grid position with random offsets for more natural look
-        const baseX = 120 + col * 150;
-        const baseY = 250 + row * 130;
+        const baseX = 120 + col * 170;
+        const baseY = 200 + row * 130;
         const offsetX = (Math.random() - 0.5) * 60; // Random offset -30 to +30
         const offsetY = (Math.random() - 0.5) * 40; // Random offset -20 to +20
 
@@ -122,16 +122,29 @@ document.getElementById('quitBtn').addEventListener('click', () => {
     bgMusic.pause();
 });
 
-// Mouse tracking for hammer (desktop only)
-if (!isMobile) {
-    document.addEventListener('mousemove', (e) => {
-        hammer.style.left = e.clientX + 'px';
-        hammer.style.top = e.clientY + 'px';
-    });
-} else {
-    // Hide hammer on mobile
-    hammer.style.display = 'none';
-}
+// Mouse/touch tracking for hammer
+document.addEventListener('mousemove', (e) => {
+    hammer.style.left = e.clientX + 'px';
+    hammer.style.top = e.clientY + 'px';
+});
+
+// Touch tracking for hammer on mobile
+document.addEventListener('touchmove', (e) => {
+    if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        hammer.style.left = touch.clientX + 'px';
+        hammer.style.top = touch.clientY + 'px';
+    }
+});
+
+// Show hammer at touch start position
+document.addEventListener('touchstart', (e) => {
+    if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        hammer.style.left = touch.clientX + 'px';
+        hammer.style.top = touch.clientY + 'px';
+    }
+});
 
 // Canvas click/touch handler
 function handleHit(e) {
@@ -326,13 +339,13 @@ function drawBackground() {
     ctx.fillStyle = skyGradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw curved grass hill (scaled up)
+    // Draw curved grass hill (adjusted for vertical canvas)
     ctx.fillStyle = '#228B22';
     ctx.beginPath();
-    ctx.moveTo(0, 200);
+    ctx.moveTo(0, 150);
     // Create wavy hill using quadratic curves
-    ctx.quadraticCurveTo(250, 170, 500, 200);
-    ctx.quadraticCurveTo(750, 230, canvas.width, 200);
+    ctx.quadraticCurveTo(150, 130, 300, 150);
+    ctx.quadraticCurveTo(450, 170, canvas.width, 150);
     ctx.lineTo(canvas.width, canvas.height);
     ctx.lineTo(0, canvas.height);
     ctx.closePath();
