@@ -13,8 +13,8 @@ const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/
 // Adjust canvas size for mobile
 if (isMobile) {
     canvas.width = window.innerWidth;
-    // Account for header height (approximately 70px)
-    canvas.height = window.innerHeight - 70;
+    // Account for header height (60px min-height)
+    canvas.height = window.innerHeight - 60;
 }
 
 // Load original game images
@@ -72,7 +72,7 @@ const doodHeight = 60; // How far the Dood pops up from the hole
 const cols = 3;
 const rows = 5;
 const marginX = canvas.width * 0.15; // 15% margin on sides
-const grassStartY = canvas.height * 0.28; // Grass starts at 28% from top (well below sky)
+const grassStartY = canvas.height * 0.35; // Grass starts at 35% from top (well below sky)
 const grassEndY = canvas.height * 0.95; // End at 95% (leave small margin at bottom)
 const availableWidth = canvas.width - (marginX * 2);
 const availableHeight = grassEndY - grassStartY;
@@ -365,8 +365,8 @@ function drawBackground() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Draw curved grass hill (dynamic based on canvas size)
-    // Hill should be at ~25% to leave room for holes starting at 28%
-    const hillTop = canvas.height * 0.25;
+    // Hill should be at ~32% to leave room for holes starting at 35%
+    const hillTop = canvas.height * 0.32;
     ctx.fillStyle = '#228B22';
     ctx.beginPath();
     ctx.moveTo(0, hillTop);
