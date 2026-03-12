@@ -43,31 +43,26 @@ const speedMultiplier = isMobile ? 1.2 : 1;
 let mouseX = canvas.width / 2;
 let keysPressed = {};
 
-// Difficulty levels
+// Difficulty progression (based on score)
 function getDifficulty() {
-    if (score >= 31) return { level: 4, goodChance: 0.4, maxObjects: 6, speedRange: [4, 7] };
-    if (score >= 21) return { level: 3, goodChance: 0.5, maxObjects: 5, speedRange: [3.5, 6] };
-    if (score >= 11) return { level: 2, goodChance: 0.7, maxObjects: 4, speedRange: [2.5, 5] };
-    return { level: 1, goodChance: 0.8, maxObjects: 3, speedRange: [2, 4] };
+    if (score >= 31) return { level: 4, goodChance: 0.3, maxObjects: 6, speedRange: [4, 7] };
+    if (score >= 21) return { level: 3, goodChance: 0.4, maxObjects: 5, speedRange: [3.5, 6] };
+    if (score >= 11) return { level: 2, goodChance: 0.5, maxObjects: 4, speedRange: [2.5, 5] };
+    return { level: 1, goodChance: 0.6, maxObjects: 3, speedRange: [2, 4] };
 }
 
 // Falling object types
 const objectTypes = {
-    goodDood: {
-        type: 'good',
-        points: 1,
-        emoji: '😊',
-        color: '#FFD700'
-    },
     goldenDood: {
         type: 'good',
-        points: 3,
+        points: 1,
         emoji: '🌟',
+        image: sadDoodImg,
         color: '#FFA500'
     },
     sadDood: {
         type: 'bad',
-        image: sadDoodImg,
+        emoji: '💀',
         color: '#E74C3C'
     }
 };
@@ -78,13 +73,9 @@ function createFallingObject() {
     const random = Math.random();
 
     let objectType;
-    if (random < 0.05) {
-        // 5% chance for golden Dood
+    if (random < difficulty.goodChance) {
         objectType = objectTypes.goldenDood;
-    } else if (random < difficulty.goodChance) {
-        objectType = objectTypes.goodDood;
     } else {
-        // Bad object - sad Dood
         objectType = objectTypes.sadDood;
     }
 
@@ -132,28 +123,23 @@ function drawFallingObject(obj) {
 
     // Check if object has an image
     if (obj.image) {
-        // Draw image (sad_dood2.png)
         const imageSize = obj.width * 1.2;
         ctx.drawImage(obj.image, obj.x - imageSize / 2, obj.y - imageSize / 2, imageSize, imageSize);
 
-        // Draw skull emoji above Dood's head
         ctx.font = `${obj.width * 0.5}px Arial`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
-        // Draw emoji with a slight outline for visibility
         ctx.strokeStyle = '#FFFFFF';
         ctx.lineWidth = 3;
-        ctx.strokeText('💀', obj.x, obj.y - imageSize / 2 - 10);
-        ctx.fillText('💀', obj.x, obj.y - imageSize / 2 - 10);
+        ctx.strokeText(obj.emoji, obj.x, obj.y - imageSize / 2 - 10);
+        ctx.fillText(obj.emoji, obj.x, obj.y - imageSize / 2 - 10);
     } else {
-        // Object background circle
         ctx.fillStyle = obj.color;
         ctx.beginPath();
         ctx.arc(obj.x, obj.y, obj.width / 2, 0, Math.PI * 2);
         ctx.fill();
 
-        // Emoji
         ctx.font = `${obj.width * 0.8}px Arial`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -188,7 +174,6 @@ function updateGame() {
     if (spawnTimer >= spawnDelay && fallingObjects.length < difficulty.maxObjects) {
         fallingObjects.push(createFallingObject());
         spawnTimer = 0;
-        // Speed up spawning as difficulty increases
         spawnDelay = Math.max(30, 60 - (difficulty.level - 1) * 10);
     }
 
@@ -250,6 +235,7 @@ function drawGame() {
     ctx.font = '16px Arial';
     ctx.textAlign = 'left';
     ctx.fillText(`Level ${difficulty.level}`, 10, 25);
+
 }
 
 // Draw background clouds
